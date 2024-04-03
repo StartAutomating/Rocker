@@ -1,4 +1,4 @@
-[ValidatePattern("^(?>docker(?>-|\s)compose)?\s{1,}help|usage:)")]
+[ValidatePattern("^(?>docker(?:(?>-|\s)compose)?\s{1,}help|usage:)")]
 param(
 [Parameter(ValueFromPipeline)]
 [string]
