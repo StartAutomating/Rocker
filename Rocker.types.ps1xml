@@ -246,6 +246,10 @@ end {
   <Type>
     <Name>Rocker</Name>
     <Members>
+      <AliasProperty>
+        <Name>Taglines</Name>
+        <ReferencedMemberName>Tagline</ReferencedMemberName>
+      </AliasProperty>
       <ScriptMethod>
         <Name>Add</Name>
         <Script>
@@ -481,6 +485,27 @@ $Collection = [Ordered]@{PSTypeName=$CollectionTypeName}
 )
 
 [PSCustomObject]$Collection
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
+        <Name>Tagline</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Gets module taglines    
+.DESCRIPTION
+    Gets module taglines.  A tagline is an alternate description often used for posts and articles.
+
+    Modules can only have one description, but can have as many taglines as they want.
+#&gt;
+param()
+@(
+    $this.PrivateData.Tagline,
+    $this.PrivateData.Taglines,
+    $this.PrivateData.PSData.Tagline,
+    $this.PrivateData.PSData.Taglines
+) -ne $null | &amp; { process { $_ } }
+
                     </GetScriptBlock>
       </ScriptProperty>
     </Members>
