@@ -1,0 +1,1 @@
+Write-FormatView -TypeName 'docker.system.df' -Property 'Type','Active', 'TotalCount', 'Size','Reclaimable' 
