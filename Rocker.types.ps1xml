@@ -242,9 +242,19 @@ end {
 param()
 
 $unrolledArgs = 
-    $args | . { process { $_  } }
+    $args | . { process { 
+        if ($_ -is [Alias]) {
+            foreach ($aliasName in $_.AliasNames) {
+                $aliasApp = $executionContext.SessionState.InvokeCommand.GetCommand($aliasName,'Application')
+                if ($aliasApp) { $aliasApp }
+            }
+        } else {
+            $_
+        }        
+    } }
 
 foreach ($arg in $unrolledArgs) {
+    
     if ($arg -is [Management.Automation.ApplicationInfo]) {
         if (-not $this.'.ApplicationMap') {
             Add-Member -MemberType NoteProperty -Name '.ApplicationMap' -Value (
