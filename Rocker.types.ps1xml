@@ -233,6 +233,28 @@ end {
     </Members>
   </Type>
   <Type>
+    <Name>docker.history</Name>
+    <Members>
+      <ScriptMethod>
+        <Name>Image.Input</Name>
+        <Script>
+                        param(
+# The Image Name.
+[Alias('ImageName')]
+[string]
+$Image
+)
+
+if ($Image) {
+    $Image
+}
+
+
+                    </Script>
+      </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
     <Name>docker.images</Name>
     <Members>
       <ScriptProperty>
