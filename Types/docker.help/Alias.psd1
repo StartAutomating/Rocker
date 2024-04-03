@@ -1,0 +1,4 @@
+@{
+    CommandNames = 'CommandName'
+    # OptionNames = 'OptionName'
+}
