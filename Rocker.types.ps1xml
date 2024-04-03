@@ -228,6 +228,22 @@ end {
     </Members>
   </Type>
   <Type>
+    <Name>docker.network.ls</Name>
+    <Members>
+      <ScriptProperty>
+        <Name>CreationTime</Name>
+        <GetScriptBlock>
+                        $this.CreatedAt -replace 
+    '(?&lt;=\d)\s(?=\d)', 'T' -replace
+    '\s', ':' -replace 
+    ':-','-' -replace 
+    ':\w{3}$' -replace 
+    '\d{2}$', ':$0' -as [DateTime]
+                    </GetScriptBlock>
+      </ScriptProperty>
+    </Members>
+  </Type>
+  <Type>
     <Name>Rocker</Name>
     <Members>
       <ScriptMethod>
