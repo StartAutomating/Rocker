@@ -311,5 +311,221 @@
         </TableRowEntries>
       </TableControl>
     </View>
+    <View>
+      <Name>Rocker</Name>
+      <ViewSelectedBy>
+        <TypeName>Rocker</TypeName>
+      </ViewSelectedBy>
+      <CustomControl>
+        <CustomEntries>
+          <CustomEntry>
+            <CustomItem>
+              <ExpressionBinding>
+                <ScriptBlock>if ($psStyle) {
+   @(foreach ($styleProp in 'Foreground.Blue','Bold') {
+
+        if ($styleProp -match '^\$') {
+            $ExecutionContext.SessionState.InvokeCommand.InvokeScript($styleProp)
+        }
+        elseif ($styleProp -match '\.') {
+            $targetObject = $psStyle
+            foreach ($dotProperty in $styleProp -split '(?&lt;!\.)\.') {
+                if (
+                    ($targetObject.psobject.Members['Item'] -and 
+                        ($targetObject.Item -is [Management.Automation.PSMethodInfo])
+                    ) -or 
+                    $targetObject -is [Collections.IDictionary]
+                ) {
+                    $targetObject = $targetObject[$dotProperty]
+                } else {
+                    $targetObject = $targetObject.$dotProperty
+                }
+            }
+            if ($targetObject) {
+                $targetObject
+            }
+        }
+        else {
+            $psStyle.$styleProp
+        }    
+
+   }) -ne '' -join ''
+}</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <PropertyName>Name</PropertyName>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>
+                    if ($PSStyle) {
+                        $PSStyle.Reset
+                    }
+                </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>if ($psStyle) {
+   @(foreach ($styleProp in 'Foreground.Cyan') {
+
+        if ($styleProp -match '^\$') {
+            $ExecutionContext.SessionState.InvokeCommand.InvokeScript($styleProp)
+        }
+        elseif ($styleProp -match '\.') {
+            $targetObject = $psStyle
+            foreach ($dotProperty in $styleProp -split '(?&lt;!\.)\.') {
+                if (
+                    ($targetObject.psobject.Members['Item'] -and 
+                        ($targetObject.Item -is [Management.Automation.PSMethodInfo])
+                    ) -or 
+                    $targetObject -is [Collections.IDictionary]
+                ) {
+                    $targetObject = $targetObject[$dotProperty]
+                } else {
+                    $targetObject = $targetObject.$dotProperty
+                }
+            }
+            if ($targetObject) {
+                $targetObject
+            }
+        }
+        else {
+            $psStyle.$styleProp
+        }    
+
+   }) -ne '' -join ''
+}</ScriptBlock>
+              </ExpressionBinding>
+              <Text> @ </Text>
+              <ExpressionBinding>
+                <ScriptBlock>
+                    if ($PSStyle) {
+                        $PSStyle.Reset
+                    }
+                </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>
+        if ($PSStyle) {
+            @(foreach ($versionPart in $_.Version.ToString() -split "\.") {
+                @(
+                    $PSStyle.Foreground.Cyan
+                    $PSStyle.Bold
+                    $versionPart
+                    $PSStyle.Reset
+                ) -join ''            
+            }) -join "$(
+                @(
+                    $PSStyle.Foreground.Blue
+                    '.'
+                ) -join ''      
+            )"
+        } else {
+            $_.ToString()
+        }
+    </ScriptBlock>
+              </ExpressionBinding>
+              <NewLine />
+              <ExpressionBinding>
+                <ScriptBlock>if ($psStyle) {
+   @(foreach ($styleProp in 'Foreground.Cyan') {
+
+        if ($styleProp -match '^\$') {
+            $ExecutionContext.SessionState.InvokeCommand.InvokeScript($styleProp)
+        }
+        elseif ($styleProp -match '\.') {
+            $targetObject = $psStyle
+            foreach ($dotProperty in $styleProp -split '(?&lt;!\.)\.') {
+                if (
+                    ($targetObject.psobject.Members['Item'] -and 
+                        ($targetObject.Item -is [Management.Automation.PSMethodInfo])
+                    ) -or 
+                    $targetObject -is [Collections.IDictionary]
+                ) {
+                    $targetObject = $targetObject[$dotProperty]
+                } else {
+                    $targetObject = $targetObject.$dotProperty
+                }
+            }
+            if ($targetObject) {
+                $targetObject
+            }
+        }
+        else {
+            $psStyle.$styleProp
+        }    
+
+   }) -ne '' -join ''
+}</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>
+        
+        @(foreach ($row in 1..2) {
+            $(
+                if ($row -eq 1) { '▄' } else { '▄' }
+            )
+        }) -join [Environment]::NewLine
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>
+                    if ($PSStyle) {
+                        $PSStyle.Reset
+                    }
+                </ScriptBlock>
+              </ExpressionBinding>
+              <NewLine />
+              <NewLine />
+              <ExpressionBinding>
+                <ScriptBlock>if ($psStyle) {
+   @(foreach ($styleProp in 'Foreground.Blue','Italic') {
+
+        if ($styleProp -match '^\$') {
+            $ExecutionContext.SessionState.InvokeCommand.InvokeScript($styleProp)
+        }
+        elseif ($styleProp -match '\.') {
+            $targetObject = $psStyle
+            foreach ($dotProperty in $styleProp -split '(?&lt;!\.)\.') {
+                if (
+                    ($targetObject.psobject.Members['Item'] -and 
+                        ($targetObject.Item -is [Management.Automation.PSMethodInfo])
+                    ) -or 
+                    $targetObject -is [Collections.IDictionary]
+                ) {
+                    $targetObject = $targetObject[$dotProperty]
+                } else {
+                    $targetObject = $targetObject.$dotProperty
+                }
+            }
+            if ($targetObject) {
+                $targetObject
+            }
+        }
+        else {
+            $psStyle.$styleProp
+        }    
+
+   }) -ne '' -join ''
+}</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>
+        $_.Taglines | Get-Random
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>
+                    if ($PSStyle) {
+                        $PSStyle.Reset
+                    }
+                </ScriptBlock>
+              </ExpressionBinding>
+              <NewLine />
+              <NewLine />
+              <NewLine />
+            </CustomItem>
+          </CustomEntry>
+        </CustomEntries>
+      </CustomControl>
+    </View>
   </ViewDefinitions>
 </Configuration>
