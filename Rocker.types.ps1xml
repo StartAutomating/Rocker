@@ -1,6 +1,22 @@
 <!-- Generated with EZOut 2.0.5: Install-Module EZOut or https://github.com/StartAutomating/EZOut -->
 <Types>
   <Type>
+    <Name>docker.container.ls</Name>
+    <Members>
+      <ScriptProperty>
+        <Name>CreationTime</Name>
+        <GetScriptBlock>
+                        $this.CreatedAt -replace 
+    '(?&lt;=\d)\s(?=\d)', 'T' -replace
+    '\s', ':' -replace 
+    ':-','-' -replace 
+    ':\w{3}$' -replace 
+    '\d{2}$', ':$0' -as [DateTime]
+                    </GetScriptBlock>
+      </ScriptProperty>
+    </Members>
+  </Type>
+  <Type>
     <Name>docker.help</Name>
     <Members>
       <AliasProperty>
