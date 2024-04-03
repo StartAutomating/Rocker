@@ -25,6 +25,12 @@
                     </GetScriptBlock>
       </ScriptProperty>
       <ScriptProperty>
+        <Name>Uptime</Name>
+        <GetScriptBlock>
+                        [DateTime]::Now - $this.CreationTime
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
         <Name>VirtualSize</Name>
         <GetScriptBlock>
                         @($this.Size -replace '\s' -split '[\(\)]')[1] -replace 'virtual' -as [long]
