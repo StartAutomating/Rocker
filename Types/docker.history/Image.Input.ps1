@@ -1,6 +1,6 @@
 param(
 # The Image Name.
-[Alias('ImageName')]
+[Alias('ImageName','Repository')]
 [string]
 $Image
 )
