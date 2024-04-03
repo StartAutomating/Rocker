@@ -1,6 +1,27 @@
 <!-- Generated with EZOut 2.0.5: Install-Module EZOut or https://github.com/StartAutomating/EZOut -->
 <Types>
   <Type>
+    <Name>docker.container</Name>
+    <Members>
+      <ScriptMethod>
+        <Name>ContainerID.Input</Name>
+        <Script>
+                        param(
+# The Container ID.
+[string]
+$ContainerID
+)
+
+if ($ContainerID) {
+    $ContainerID
+}
+
+
+                    </Script>
+      </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
     <Name>docker.container.ls</Name>
     <Members>
       <AliasProperty>
