@@ -1,4 +1,4 @@
 @{
     CommandNames = 'CommandName'
-    # OptionNames = 'OptionName'
+    OptionNames = 'OptionName'
 }
