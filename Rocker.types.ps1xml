@@ -3,6 +3,10 @@
   <Type>
     <Name>docker.help</Name>
     <Members>
+      <AliasProperty>
+        <Name>CommandNames</Name>
+        <ReferencedMemberName>CommandName</ReferencedMemberName>
+      </AliasProperty>
       <ScriptMethod>
         <Name>Parse</Name>
         <Script>
@@ -117,6 +121,14 @@ end {
 
                     </Script>
       </ScriptMethod>
+      <ScriptProperty>
+        <Name>CommandName</Name>
+        <GetScriptBlock>
+                        @(foreach ($cmd in $this.Commands) {    
+    $cmd.CommandName
+}) -ne '' -as [string[]]
+                    </GetScriptBlock>
+      </ScriptProperty>
     </Members>
   </Type>
   <Type>
