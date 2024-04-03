@@ -14,7 +14,7 @@
       <ScriptMethod>
         <Name>Parse</Name>
         <Script>
-                        [ValidatePattern("^(?&gt;docker(?&gt;-|\s)compose)?\s{1,}help|usage:)")]
+                        [ValidatePattern("^(?&gt;docker(?:(?&gt;-|\s)compose)?\s{1,}help|usage:)")]
 param(
 [Parameter(ValueFromPipeline)]
 [string]
