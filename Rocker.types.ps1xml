@@ -3,6 +3,10 @@
   <Type>
     <Name>docker.container.ls</Name>
     <Members>
+      <AliasProperty>
+        <Name>ContainerID</Name>
+        <ReferencedMemberName>id</ReferencedMemberName>
+      </AliasProperty>
       <ScriptProperty>
         <Name>CreationTime</Name>
         <GetScriptBlock>
