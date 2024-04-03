@@ -1,1 +1,1 @@
-Write-FormatView -TypeName 'docker.images' -Property ID, Image, State, Size, CreationTime
+Write-FormatView -TypeName 'docker.images' -Property ID, Repository, Tag, CreationTime, Size -AutoSize
