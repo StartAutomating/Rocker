@@ -44,4 +44,20 @@ $Collection = [Ordered]@{PSTypeName=$CollectionTypeName}
       </ScriptProperty>
     </Members>
   </Type>
+  <Type>
+    <Name>Rocker.Parsers</Name>
+    <Members>
+      <ScriptProperty>
+        <Name>All</Name>
+        <GetScriptBlock>
+                        @(foreach ($property in $this.psobject.properties) {
+    if (-not $property.IsInstance) { continue } 
+    if (-not $property -is [psnoteproperty]) { continue } 
+    $property.Value
+})
+
+                    </GetScriptBlock>
+      </ScriptProperty>
+    </Members>
+  </Type>
 </Types>
