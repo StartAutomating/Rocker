@@ -1,0 +1,1 @@
+Write-FormatView -TypeName 'docker.container.ls' -Property ID, Image, State, Size, CreationTime
