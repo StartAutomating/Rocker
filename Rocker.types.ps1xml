@@ -18,6 +18,12 @@
     '\d{2}$', ':$0' -as [DateTime]
                     </GetScriptBlock>
       </ScriptProperty>
+      <ScriptProperty>
+        <Name>UniqueSize</Name>
+        <GetScriptBlock>
+                        @($this.Size -replace '\s' -split '[\(\)]')[0] -as [long]
+                    </GetScriptBlock>
+      </ScriptProperty>
     </Members>
   </Type>
   <Type>
