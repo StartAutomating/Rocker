@@ -276,6 +276,7 @@
         <TypeName>docker.images</TypeName>
       </ViewSelectedBy>
       <TableControl>
+        <AutoSize />
         <TableHeaders>
           <TableColumnHeader>
           </TableColumnHeader>
@@ -295,16 +296,16 @@
                 <PropertyName>ID</PropertyName>
               </TableColumnItem>
               <TableColumnItem>
-                <PropertyName>Image</PropertyName>
+                <PropertyName>Repository</PropertyName>
               </TableColumnItem>
               <TableColumnItem>
-                <PropertyName>State</PropertyName>
-              </TableColumnItem>
-              <TableColumnItem>
-                <PropertyName>Size</PropertyName>
+                <PropertyName>Tag</PropertyName>
               </TableColumnItem>
               <TableColumnItem>
                 <PropertyName>CreationTime</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>Size</PropertyName>
               </TableColumnItem>
             </TableColumnItems>
           </TableRowEntry>
