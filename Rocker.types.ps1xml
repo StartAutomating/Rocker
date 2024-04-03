@@ -249,6 +249,27 @@ end {
     </Members>
   </Type>
   <Type>
+    <Name>docker.kill</Name>
+    <Members>
+      <ScriptMethod>
+        <Name>ContainerID.Input</Name>
+        <Script>
+                        param(
+# The Container ID.
+[string]
+$ContainerID
+)
+
+if ($ContainerID) {
+    $ContainerID
+}
+
+
+                    </Script>
+      </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
     <Name>docker.network.ls</Name>
     <Members>
       <ScriptProperty>
