@@ -141,6 +141,15 @@ end {
 }) -ne '' -as [string[]]
                     </GetScriptBlock>
       </ScriptProperty>
+      <ScriptProperty>
+        <Name>SupportsFormat</Name>
+        <GetScriptBlock>
+                        return (
+    ($this.Options.OptionName -match '--format') -as [bool]
+)
+
+                    </GetScriptBlock>
+      </ScriptProperty>
     </Members>
   </Type>
   <Type>
