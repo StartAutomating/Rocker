@@ -106,6 +106,20 @@ return $true
   <Type>
     <Name>Rocker.Parsers</Name>
     <Members>
+      <ScriptMethod>
+        <Name>ForCommand</Name>
+        <Script>
+                        param(
+$CommandLine
+)
+
+foreach ($parser in $this.All) {
+    if ($parser.Validate -and $parser.Validate($commandLine)) {
+        $parser
+    }    
+}
+                    </Script>
+      </ScriptMethod>
       <ScriptProperty>
         <Name>All</Name>
         <GetScriptBlock>
