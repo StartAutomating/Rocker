@@ -1,0 +1,1 @@
+@($this.Size -replace '\s' -split '[\(\)]')[1] -replace 'virtual' -as [long]
