@@ -286,6 +286,11 @@ if ($ContainerID) {
     </Members>
   </Type>
   <Type>
+    <Name>docker.system.df</Name>
+    <Members>
+    </Members>
+  </Type>
+  <Type>
     <Name>Rocker</Name>
     <Members>
       <AliasProperty>
