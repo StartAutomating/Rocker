@@ -1,0 +1,1 @@
+@($this.Size -replace '\s' -split '[\(\)]')[0] -as [long]
