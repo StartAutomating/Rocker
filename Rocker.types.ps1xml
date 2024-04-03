@@ -60,6 +60,27 @@ if ($ContainerID) {
     </Members>
   </Type>
   <Type>
+    <Name>docker.diff</Name>
+    <Members>
+      <ScriptMethod>
+        <Name>ContainerID.Input</Name>
+        <Script>
+                        param(
+# The Container ID.
+[string]
+$ContainerID
+)
+
+if ($ContainerID) {
+    $ContainerID
+}
+
+
+                    </Script>
+      </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
     <Name>docker.help</Name>
     <Members>
       <AliasProperty>
