@@ -24,6 +24,12 @@
                         @($this.Size -replace '\s' -split '[\(\)]')[0] -as [long]
                     </GetScriptBlock>
       </ScriptProperty>
+      <ScriptProperty>
+        <Name>VirtualSize</Name>
+        <GetScriptBlock>
+                        @($this.Size -replace '\s' -split '[\(\)]')[1] -replace 'virtual' -as [long]
+                    </GetScriptBlock>
+      </ScriptProperty>
     </Members>
   </Type>
   <Type>
