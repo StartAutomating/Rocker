@@ -7,6 +7,10 @@
         <Name>CommandNames</Name>
         <ReferencedMemberName>CommandName</ReferencedMemberName>
       </AliasProperty>
+      <AliasProperty>
+        <Name>OptionNames</Name>
+        <ReferencedMemberName>OptionName</ReferencedMemberName>
+      </AliasProperty>
       <ScriptMethod>
         <Name>Parse</Name>
         <Script>
@@ -126,6 +130,14 @@ end {
         <GetScriptBlock>
                         @(foreach ($cmd in $this.Commands) {    
     $cmd.CommandName
+}) -ne '' -as [string[]]
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
+        <Name>OptionName</Name>
+        <GetScriptBlock>
+                        @(foreach ($opt in $this.Options) {    
+    $opt.OptionName
 }) -ne '' -as [string[]]
                     </GetScriptBlock>
       </ScriptProperty>
