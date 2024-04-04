@@ -1,6 +1,54 @@
 <!-- Generated with EZOut 2.0.5: Install-Module EZOut or https://github.com/StartAutomating/EZOut -->
 <Types>
   <Type>
+    <Name>docker.build</Name>
+    <Members>
+      <ScriptMethod>
+        <Name>ParseBuild</Name>
+        <Script>
+                        [ValidatePattern("^(?&gt;docker(?:(?&gt;-|\s)compose)?\s{1,}build)")]
+param(
+[Parameter(ValueFromPipeline)]
+[string]
+$Content,
+
+[string]
+$CommandLine
+)
+
+begin {
+    $ProgressId = Get-Random
+    $StageStack = @()
+}
+
+process {
+    $lineOut = "$content"
+    if ($lineOut -match 'The handle is invalid.\s{0,}$') { return }
+    if ("$lineOut" -match "\[(?&lt;StageNumber&gt;\d+)/(?&lt;StageCount&gt;\d+)\]") {
+        $MatchInfo = [Ordered]@{} + $matches
+        $MatchInfo.StageNumber = $MatchInfo.StageNumber -as [int]
+        $MatchInfo.StageCount = $MatchInfo.StageCount -as [int]
+        $PercentComplete = [math]::Round(($MatchInfo.StageNumber / $MatchInfo.StageCount) * 100)
+        Write-Progress -Activity "$lineOut" -Status "$(
+            if ($MatchInfo.StageNumber) {"[$($matchInfo.StageNumber)/$($matchInfo.StageCount)]"}
+            ' '
+        )"  -id $ProgressId -PercentComplete $PercentComplete
+    } else {
+        Write-Progress -Activity "$lineOut" -Status " " -id $ProgressId 
+    }
+    Start-Sleep -Milliseconds 1
+    "$lineOut"        
+}
+
+end {
+    Write-Progress -Activity "Docker Build" -Status "Complete" -id $ProgressId -Completed
+}
+
+                    </Script>
+      </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
     <Name>docker.container</Name>
     <Members>
       <ScriptMethod>
@@ -272,6 +320,27 @@ if ($Image) {
   </Type>
   <Type>
     <Name>docker.kill</Name>
+    <Members>
+      <ScriptMethod>
+        <Name>ContainerID.Input</Name>
+        <Script>
+                        param(
+# The Container ID.
+[string]
+$ContainerID
+)
+
+if ($ContainerID) {
+    $ContainerID
+}
+
+
+                    </Script>
+      </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
+    <Name>docker.logs</Name>
     <Members>
       <ScriptMethod>
         <Name>ContainerID.Input</Name>
