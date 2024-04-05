@@ -10,12 +10,36 @@ $CommandLine
 
 begin {
     $ProgressId = Get-Random
-    $StageStack = @()
+    $LayerCounter = 0
+    $LayerStartTimes = [Ordered]@{}
+    $LayerMessages = [Ordered]@{}
 }
 
 process {
     $lineOut = "$content"
     if ($lineOut -match 'The handle is invalid.\s{0,}$') { return }
+    if ($lineOut -match '^\#(?<Layer>\d+)') {
+        $layerNumber = $matches.Layer -as [int]
+        if ($layerNumber -gt $LayerCounter) {
+            $LayerCounter = $layerNumber
+        }
+        if (-not $LayerStartTimes["$layerNumber"]) {
+            $LayerStartTimes["$layerNumber"] = [DateTime]::Now
+        }
+        if (-not $LayerMessages["$layerNumber"]) {
+            $LayerMessages["$layerNumber"] = @()
+        }
+        $LayerMessages["$layerNumber"] += $lineOut
+        $layerProgressId = $ProgressId + $layerNumber
+        if ($lineOut -match '^\#\d+\s{1,}done\s{1,}(?<t>[\d\.]+)s') {            
+            # Layer is done, now is a good time to output            
+            Write-Progress -Activity "$LayerNumber " -Status "$lineOut" -id $layerProgressId -Completed
+        } else {
+            Write-Progress -Activity "$LayerNumber " -Status "$lineOut" -id $layerProgressId
+        }
+    } else {
+        $layerProgressId = $ProgressId
+    }
     if ("$lineOut" -match "\[(?<StageNumber>\d+)/(?<StageCount>\d+)\]") {
         $MatchInfo = [Ordered]@{} + $matches
         $MatchInfo.StageNumber = $MatchInfo.StageNumber -as [int]
@@ -24,14 +48,12 @@ process {
         Write-Progress -Activity "$lineOut" -Status "$(
             if ($MatchInfo.StageNumber) {"[$($matchInfo.StageNumber)/$($matchInfo.StageCount)]"}
             ' '
-        )"  -id $ProgressId -PercentComplete $PercentComplete
-    } else {
-        Write-Progress -Activity "$lineOut" -Status " " -id $ProgressId 
+        )"  -id $layerProgressId -PercentComplete $PercentComplete
     }
-    Start-Sleep -Milliseconds 1
-    "$lineOut"        
+   
+    "$lineOut"
 }
 
 end {
-    Write-Progress -Activity "Docker Build" -Status "Complete" -id $ProgressId -Completed
+    
 }
