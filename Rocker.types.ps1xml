@@ -387,6 +387,10 @@ if ($ContainerID) {
   <Type>
     <Name>docker.network.ls</Name>
     <Members>
+      <AliasProperty>
+        <Name>NetworkId</Name>
+        <ReferencedMemberName>Id</ReferencedMemberName>
+      </AliasProperty>
       <ScriptProperty>
         <Name>CreationTime</Name>
         <GetScriptBlock>
