@@ -13,6 +13,7 @@ begin {
     $LayerCounter = 0
     $LayerStartTimes = [Ordered]@{}
     $LayerMessages = [Ordered]@{}
+    $BuildStartTime = [DateTime]::Now
 }
 
 process {
@@ -31,11 +32,12 @@ process {
         }
         $LayerMessages["$layerNumber"] += $lineOut
         $layerProgressId = $ProgressId + $layerNumber
+        $timeSince  = [DateTime]::Now - $BuildStartTime
         if ($lineOut -match '^\#\d+\s{1,}done\s{1,}(?<t>[\d\.]+)s') {            
             # Layer is done, now is a good time to output            
-            Write-Progress -Activity "$LayerNumber " -Status "$lineOut" -id $layerProgressId -Completed
+            Write-Progress -Activity "$LayerNumber @ $timeSince" -Status "$lineOut" -id $layerProgressId -Completed
         } else {
-            Write-Progress -Activity "$LayerNumber " -Status "$lineOut" -id $layerProgressId
+            Write-Progress -Activity "$LayerNumber @ $timeSince" -Status "$lineOut" -id $layerProgressId
         }
     } else {
         $layerProgressId = $ProgressId
@@ -45,7 +47,7 @@ process {
         $MatchInfo.StageNumber = $MatchInfo.StageNumber -as [int]
         $MatchInfo.StageCount = $MatchInfo.StageCount -as [int]
         $PercentComplete = [math]::Round(($MatchInfo.StageNumber / $MatchInfo.StageCount) * 100)
-        Write-Progress -Activity "$lineOut" -Status "$(
+        Write-Progress -Activity "@ $timeSince $lineOut" -Status "$(
             if ($MatchInfo.StageNumber) {"[$($matchInfo.StageNumber)/$($matchInfo.StageCount)]"}
             ' '
         )"  -id $layerProgressId -PercentComplete $PercentComplete
