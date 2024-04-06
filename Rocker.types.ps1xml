@@ -106,7 +106,7 @@ if ($ContainerID) {
                         $this.CreatedAt -replace 
     '(?&lt;=\d)\s(?=\d)', 'T' -replace
     '\s', ':' -replace 
-    ':-','-' -replace 
+    ':([\-\+])','$1' -replace 
     ':\w{3}$' -replace 
     '\d{2}$', ':$0' -as [DateTime]
                     </GetScriptBlock>
@@ -335,7 +335,7 @@ if ($Image) {
                         $this.CreatedAt -replace 
     '(?&lt;=\d)\s(?=\d)', 'T' -replace
     '\s', ':' -replace 
-    ':-','-' -replace 
+    ':([\-\+])','$1' -replace 
     ':\w{3}$' -replace 
     '\d{2}$', ':$0' -as [DateTime]
                     </GetScriptBlock>
@@ -393,7 +393,7 @@ if ($ContainerID) {
                         $this.CreatedAt -replace 
     '(?&lt;=\d)\s(?=\d)', 'T' -replace
     '\s', ':' -replace 
-    ':-','-' -replace 
+    ':([\-\+])','$1' -replace 
     ':\w{3}$' -replace 
     '\d{2}$', ':$0' -as [DateTime]
                     </GetScriptBlock>
