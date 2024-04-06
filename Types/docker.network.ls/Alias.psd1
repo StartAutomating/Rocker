@@ -1,0 +1,3 @@
+@{
+    NetworkId = 'Id'
+}

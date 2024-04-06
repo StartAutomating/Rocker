@@ -1,0 +1,3 @@
+@{
+    Taglines = 'Tagline'
+}

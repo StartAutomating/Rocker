@@ -1,0 +1,1 @@
+Write-FormatView -TypeName 'docker.history' -Property CreatedAt, Size, ID, CreatedBy, Comment -AutoSize

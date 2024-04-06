@@ -1,0 +1,1 @@
+Write-FormatView -TypeName 'docker.images' -Property ID, Repository, Tag, CreationTime, Size -AutoSize

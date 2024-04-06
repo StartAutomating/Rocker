@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated with PSSVG 0.2.10 <https://github.com/StartAutomating/PSSVG> -->
+<svg viewBox="0 0 1920 1080" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+  <style type="text/css">@import url('https://fonts.googleapis.com/css?family=Rajdhani')</style>
+  <symbol id="psChevron" viewBox="0 0 100 100">
+    <polygon points="40,20 45,20 60,50 35,80 32.5,80 55,50" />
+  </symbol>
+  <use href="#psChevron" x="0%" y="37.5%" height="25%" opacity=".9" fill="#4488FF" class="foreground-fill" />
+  <text x="50%" y="50%" font-size="36em" font-family="sans-serif" dominant-baseline="middle" text-anchor="middle" style="font-family:'Rajdhani',sans-serif" fill="#4488FF" class="foreground-fill">Rocker</text>
+  <rect x="6.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="6.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="9.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="9.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="12.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="12.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="15.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="15.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="18.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="18.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="21.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="21.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="24.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="24.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="27.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="27.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="30.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="30.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="33.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="33.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="36.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="36.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="39.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="39.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="42.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="42.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="45.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="45.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="48.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="48.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="51.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="51.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="54.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="54.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="57.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="57.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="60.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="60.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="63.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="63.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="66.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="66.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="69.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="69.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="72.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="72.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="75.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="75.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="78.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="78.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="81.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="81.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="84.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="84.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="87.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="87.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="90.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="90.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+  <rect x="93.5%" y="70%" width="2%" height="2%" fill="#4488ff" class="foreground-fill" />
+  <rect x="93.75%" y="72.5%" width="1.5%" height="1.5%" fill="#4488ff" class="foreground-fill" />
+</svg>

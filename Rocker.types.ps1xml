@@ -1,0 +1,895 @@
+<!-- Generated with EZOut 2.0.5: Install-Module EZOut or https://github.com/StartAutomating/EZOut -->
+<Types>
+  <Type>
+    <Name>docker.build</Name>
+    <Members>
+      <ScriptMethod>
+        <Name>ParseBuild</Name>
+        <Script>
+                        [ValidatePattern("^(?&gt;docker(?:(?&gt;-|\s)compose)?\s{1,}build)")]
+param(
+[Parameter(ValueFromPipeline)]
+[string]
+$Content,
+
+[string]
+$CommandLine
+)
+
+begin {
+    $ProgressId = Get-Random
+    $LayerCounter = 0
+    $LayerStartTimes = [Ordered]@{}
+    $LayerMessages = [Ordered]@{}
+    $BuildStartTime = [DateTime]::Now
+}
+
+process {
+    $lineOut = "$content"
+    if ($lineOut -match 'The handle is invalid.\s{0,}$') { return }
+    if ($lineOut -match '^\#(?&lt;Layer&gt;\d+)') {
+        $layerNumber = $matches.Layer -as [int]
+        if ($layerNumber -gt $LayerCounter) {
+            $LayerCounter = $layerNumber
+        }
+        if (-not $LayerStartTimes["$layerNumber"]) {
+            $LayerStartTimes["$layerNumber"] = [DateTime]::Now
+        }
+        if (-not $LayerMessages["$layerNumber"]) {
+            $LayerMessages["$layerNumber"] = @()
+        }
+        $LayerMessages["$layerNumber"] += $lineOut
+        $layerProgressId = $ProgressId + $layerNumber
+        $timeSince  = [DateTime]::Now - $BuildStartTime
+        if ($lineOut -match '^\#\d+\s{1,}done\s{1,}(?&lt;t&gt;[\d\.]+)s') {            
+            # Layer is done, now is a good time to output            
+            Write-Progress -Activity "$LayerNumber @ $timeSince" -Status "$lineOut" -id $layerProgressId -Completed
+        } else {
+            Write-Progress -Activity "$LayerNumber @ $timeSince" -Status "$lineOut" -id $layerProgressId
+        }
+    } else {
+        $layerProgressId = $ProgressId
+    }
+    if ("$lineOut" -match "\[(?&lt;StageNumber&gt;\d+)/(?&lt;StageCount&gt;\d+)\]") {
+        $MatchInfo = [Ordered]@{} + $matches
+        $MatchInfo.StageNumber = $MatchInfo.StageNumber -as [int]
+        $MatchInfo.StageCount = $MatchInfo.StageCount -as [int]
+        $PercentComplete = [math]::Round(($MatchInfo.StageNumber / $MatchInfo.StageCount) * 100)
+        Write-Progress -Activity "@ $timeSince $lineOut" -Status "$(
+            if ($MatchInfo.StageNumber) {"[$($matchInfo.StageNumber)/$($matchInfo.StageCount)]"}
+            ' '
+        )"  -id $layerProgressId -PercentComplete $PercentComplete
+    }
+   
+    "$lineOut"
+}
+
+end {
+    
+}
+
+                    </Script>
+      </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
+    <Name>docker.container</Name>
+    <Members>
+      <ScriptMethod>
+        <Name>ContainerID.Input</Name>
+        <Script>
+                        param(
+# The Container ID.
+[string]
+$ContainerID
+)
+
+if ($ContainerID) {
+    $ContainerID
+}
+
+
+                    </Script>
+      </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
+    <Name>docker.container.ls</Name>
+    <Members>
+      <AliasProperty>
+        <Name>ContainerID</Name>
+        <ReferencedMemberName>id</ReferencedMemberName>
+      </AliasProperty>
+      <ScriptProperty>
+        <Name>CreationTime</Name>
+        <GetScriptBlock>
+                        $this.CreatedAt -replace 
+    '(?&lt;=\d)\s(?=\d)', 'T' -replace
+    '\s', ':' -replace 
+    ':([\-\+])','$1' -replace 
+    ':\w{3}$' -replace 
+    '\d{2}$', ':$0' -as [DateTime]
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
+        <Name>UniqueSize</Name>
+        <GetScriptBlock>
+                        @($this.Size -replace '\s' -split '[\(\)]')[0] -as [long]
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
+        <Name>Uptime</Name>
+        <GetScriptBlock>
+                        [DateTime]::Now - $this.CreationTime
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
+        <Name>VirtualSize</Name>
+        <GetScriptBlock>
+                        @($this.Size -replace '\s' -split '[\(\)]')[1] -replace 'virtual' -as [long]
+                    </GetScriptBlock>
+      </ScriptProperty>
+    </Members>
+  </Type>
+  <Type>
+    <Name>docker.diff</Name>
+    <Members>
+      <ScriptMethod>
+        <Name>ContainerID.Input</Name>
+        <Script>
+                        param(
+# The Container ID.
+[string]
+$ContainerID
+)
+
+if ($ContainerID) {
+    $ContainerID
+}
+
+
+                    </Script>
+      </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
+    <Name>docker.help</Name>
+    <Members>
+      <AliasProperty>
+        <Name>CommandNames</Name>
+        <ReferencedMemberName>CommandName</ReferencedMemberName>
+      </AliasProperty>
+      <AliasProperty>
+        <Name>OptionNames</Name>
+        <ReferencedMemberName>OptionName</ReferencedMemberName>
+      </AliasProperty>
+      <ScriptMethod>
+        <Name>Parse</Name>
+        <Script>
+                        [ValidatePattern("^(?&gt;docker(?:(?&gt;-|\s)compose)?\s{1,}help|usage:)")]
+param(
+[Parameter(ValueFromPipeline)]
+[string]
+$Content,
+
+[string]
+$CommandLine
+)
+
+begin {
+    $dockerCommandPattern = '^\s{2}(?&lt;CmdName&gt;\w+)(?&lt;IsPlugin&gt;\*)?\s+(?&lt;Description&gt;.+$)'    
+    $DockerOptionsPattern = '\s{2,}(?:\-{1,2}\w+)'
+    
+    $CurrentOutput = $null
+    
+    $DockerCommandHelp = [PSCustomObject][Ordered]@{
+                                 PSTypeName  = 'Docker.Help'
+                                 CommandLine = $CommandLine
+                                 Usage       = ''
+                                 Description = ''
+                                 Options     = @()
+                                 Commands    = @()            
+                             }
+
+    $inOptions  = $false
+    $inCommands = $false
+}
+
+process {
+    foreach ($line in $content -split '[\r\n]+') {
+        if (($line -match '^Usage\:') -and (-not $DockerCommandHelp.Usage)) {
+            $DockerCommandHelp.Usage = $line -replace '^Usage\:\s{0,}'
+        }
+        elseif ($line -match '^\S+' -and $line -notmatch '^.+?\:$') {
+            if (-not $DockerCommandHelp.Description) {
+                $DockerCommandHelp.Description = $line
+            } else {
+                $DockerCommandHelp.Description += ([Environment]::NewLine + $line)
+            }            
+        }
+        if ($line -match $DockerOptionsPattern) {
+            if ($CurrentOutput) {
+                $DockerCommandHelp.Options += $CurrentOutput
+            }
+            $inOptions = $true
+            if ($line -match '--[\w\-]+\s(?&lt;type&gt;\S+)') {
+                $CurrentOutput = 
+                    [PSCustomObject][Ordered]@{
+                                            PSTypeName = 'Docker.Argument'
+                                            OptionName = $(@($line -split '\s' -match '^-{2}')[0]) -as [string]
+                                            OptionFlag = $line -split '\s' -match '^-\w' -replace '\,\s{,0}$'
+                                            Type = $matches.type
+                                            CommandLine = $CommandLine
+                                            Description = @($line -split '\s{2,}')[-1]
+                                        }
+            } else {
+                $CurrentOutput =
+                    [PSCustomObject][Ordered]@{
+                                            PSTypeName = 'Docker.Argument'
+                                            OptionName = $(@($line -split '\s' -match '^-{2}')[0]) -as [string]
+                                            OptionFlag = $line -split '\s' -match '^-\w' -replace '\,\s{,0}$'
+                                            CommandLine = $CommandLine
+                                            Description = @($line -split '\s{2,}')[-1]
+                                        }
+            }
+            
+            
+        }
+        elseif ($line -match $dockerCommandPattern) {
+            $inCommands = $true
+            if ($matches.CmdName -eq 'docker') { continue }
+
+            if ($CurrentOutput) {
+                if ($CurrentOutput.OptionName) {
+                    $DockerCommandHelp.Options += $CurrentOutput
+                } else {
+                    $DockerCommandHelp.Commands += $CurrentOutput
+                }
+                
+            }
+            $CurrentOutput = 
+                [PSCustomObject][Ordered]@{
+                                    PSTypeName = 'Docker.Command'
+                                    CommandName = $matches.CmdName
+                                    Description = $matches.Description
+                                    IsPlugin = $matches.IsPlugin -as [bool]
+                                }
+            if ($CurrentOutput.CommandName -match '^\s{0,}$') {
+                $CurrentOutput = $null
+            }
+        }
+        elseif ($line -match '^\s{8,}' -and $CurrentOutput) {
+            $CurrentOutput.Description += ($line -replace '^\s{8,}', ' ')
+        }
+    }
+}
+
+end {
+    if ($CurrentOutput) {
+        if ($CurrentOutput.CommandName) {
+            $DockerCommandHelp.Commands += $CurrentOutput
+        } else {
+            $DockerCommandHelp.Options += $CurrentOutput
+        }        
+    }
+    $DockerCommandHelp
+}
+
+                    </Script>
+      </ScriptMethod>
+      <ScriptProperty>
+        <Name>CommandName</Name>
+        <GetScriptBlock>
+                        @(foreach ($cmd in $this.Commands) {    
+    $cmd.CommandName
+}) -ne '' -as [string[]]
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
+        <Name>OptionName</Name>
+        <GetScriptBlock>
+                        @(foreach ($opt in $this.Options) {    
+    $opt.OptionName
+}) -ne '' -as [string[]]
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
+        <Name>SupportsFormat</Name>
+        <GetScriptBlock>
+                        return (
+    ($this.Options.OptionName -match '--format') -as [bool]
+)
+
+                    </GetScriptBlock>
+      </ScriptProperty>
+    </Members>
+  </Type>
+  <Type>
+    <Name>docker.history</Name>
+    <Members>
+      <ScriptMethod>
+        <Name>Image.Input</Name>
+        <Script>
+                        param(
+# The Image Name.
+[Alias('ImageName','Repository')]
+[string]
+$Image
+)
+
+if ($Image) {
+    $Image
+}
+
+
+                    </Script>
+      </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
+    <Name>docker.images</Name>
+    <Members>
+      <ScriptProperty>
+        <Name>CreationTime</Name>
+        <GetScriptBlock>
+                        $this.CreatedAt -replace 
+    '(?&lt;=\d)\s(?=\d)', 'T' -replace
+    '\s', ':' -replace 
+    ':([\-\+])','$1' -replace 
+    ':\w{3}$' -replace 
+    '\d{2}$', ':$0' -as [DateTime]
+                    </GetScriptBlock>
+      </ScriptProperty>
+    </Members>
+  </Type>
+  <Type>
+    <Name>docker.kill</Name>
+    <Members>
+      <ScriptMethod>
+        <Name>ContainerID.Input</Name>
+        <Script>
+                        param(
+# The Container ID.
+[string]
+$ContainerID
+)
+
+if ($ContainerID) {
+    $ContainerID
+}
+
+
+                    </Script>
+      </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
+    <Name>docker.logs</Name>
+    <Members>
+      <ScriptMethod>
+        <Name>ContainerID.Input</Name>
+        <Script>
+                        param(
+# The Container ID.
+[string]
+$ContainerID
+)
+
+if ($ContainerID) {
+    $ContainerID
+}
+
+
+                    </Script>
+      </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
+    <Name>docker.network.ls</Name>
+    <Members>
+      <AliasProperty>
+        <Name>NetworkId</Name>
+        <ReferencedMemberName>Id</ReferencedMemberName>
+      </AliasProperty>
+      <ScriptProperty>
+        <Name>CreationTime</Name>
+        <GetScriptBlock>
+                        $this.CreatedAt -replace 
+    '(?&lt;=\d)\s(?=\d)', 'T' -replace
+    '\s', ':' -replace 
+    ':([\-\+])','$1' -replace 
+    ':\w{3}$' -replace 
+    '\d{2}$', ':$0' -as [DateTime]
+                    </GetScriptBlock>
+      </ScriptProperty>
+    </Members>
+  </Type>
+  <Type>
+    <Name>docker.run</Name>
+    <Members>
+      <ScriptMethod>
+        <Name>Dictionary.Input</Name>
+        <Script>
+                        
+param(
+[Parameter(Mandatory)]
+[Collections.IDictionary]
+$Dictionary
+)
+
+if (-not $Dictionary.Count) { return }
+foreach ($keyValuePair in $Dictionary.GetEnumerator()) {
+    # If it's a path, treat it as a --volume
+    if ($keyValuePair.Key -match '[\\/]')
+    {
+        "--volume"
+        "$($keyValuePair.Key):$($keyValuePair.Value)"
+    }
+    # Otherwise, treat it as an environment variable
+    else
+    {
+        "--env"
+        "$($keyValuePair.Key)=$($keyValuePair.Value)"
+    }
+}
+                    </Script>
+      </ScriptMethod>
+      <ScriptMethod>
+        <Name>ScriptBlock.Input</Name>
+        <Script>
+                        
+param(
+[Parameter(Mandatory)]
+[ScriptBlock]
+$ScriptBlock
+)
+
+"pwsh"
+"-encodedCommand"
+[Convert]::ToBase64String([Text.Encoding]::Unicode.getBytes("$ScriptBlock"))
+                    </Script>
+      </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
+    <Name>docker.system.df</Name>
+    <Members>
+    </Members>
+  </Type>
+  <Type>
+    <Name>Rocker</Name>
+    <Members>
+      <AliasProperty>
+        <Name>Taglines</Name>
+        <ReferencedMemberName>Tagline</ReferencedMemberName>
+      </AliasProperty>
+      <ScriptMethod>
+        <Name>Add</Name>
+        <Script>
+                        &lt;#
+.SYNOPSIS
+    Adds to Rocker
+.DESCRIPTION
+    Adds commands to Rocker.  
+#&gt;
+param()
+
+$unrolledArgs = 
+    $args | . { process { 
+        if ($_ -is [Alias]) {
+            foreach ($aliasName in $_.AliasNames) {
+                $aliasApp = $executionContext.SessionState.InvokeCommand.GetCommand($aliasName,'Application')
+                if ($aliasApp) { $aliasApp }
+            }
+        } else {
+            $_
+        }        
+    } }
+
+foreach ($arg in $unrolledArgs) {
+    
+    if ($arg -is [Management.Automation.ApplicationInfo]) {
+        if (-not $this.'.ApplicationMap') {
+            Add-Member -MemberType NoteProperty -Name '.ApplicationMap' -Value (
+                [Ordered]@{}
+            ) -InputObject $this -Force
+        }
+        $this.'.ApplicationMap'[$arg.Name] = $arg
+    }
+    elseif ($arg -is [Management.Automation.FunctionInfo]) {
+        if (-not $this.'.FunctionMap') {
+            Add-Member -MemberType NoteProperty -Name '.FunctionMap' -Value (
+                [Ordered]@{}
+            ) -InputObject $this -Force
+        }
+        $this.'.FunctionMap'[$arg.Name] = $arg
+    }
+}
+                    </Script>
+      </ScriptMethod>
+      <ScriptMethod>
+        <Name>Complete</Name>
+        <Script>
+                        param($wordToComplete, $commandAst, $cursorPosition)
+        
+
+if (-not $this) {
+    $this = $Rocker
+}
+
+if ($this -and -not $this.'.CompletionCache') {
+    $this | Add-Member NoteProperty '.CompletionCache' ([Ordered]@{}) -Force
+}
+$CompletionCache = $this.'.CompletionCache'
+    
+if ((-not $wordToComplete) -and $CompletionCache["$CommandAst"]) {
+    return $CompletionCache["$CommandAst"]
+}
+
+$commandHelp = if ($commandAst.CommandElements.Count -eq 1) {
+        $rocker.GetApplicationHelp("$($commandAst.CommandElements[0])")                                
+    } elseif ($commandAst.CommandElements.Count -ge 2) {
+        for ($commandElementIndex = $commandAst.CommandElements.Count; $commandElementIndex -ge 0; $commandElementIndex--) {
+            $combinedElements = @($commandAst.CommandElements[0..$commandElementIndex].Value) -notmatch '^\-'
+            $commandHelp = $rocker.GetApplicationHelp($combinedElements)
+            if ($commandHelp) {
+                break
+            }
+        }
+        
+        if ($commandHelp) {                    
+            $commandHelp
+        }
+    }
+
+if ($commandHelp) {
+    if ($wordToComplete) {
+        if ($wordToComplete -match '^\-') {
+            return @($commandHelp.Options.OptionName) -like "$wordToComplete*"
+        } else {
+            return @($commandHelp.Commands.CommandName) -like "$wordToComplete*"
+        }
+    } else {
+        $CompletionCache["$CommandAst"] = @($commandHelp.Commands.CommandName) -like '?*'
+        return $CompletionCache["$CommandAst"]
+    }
+}        
+                    </Script>
+      </ScriptMethod>
+      <ScriptMethod>
+        <Name>GetApplicationHelp</Name>
+        <Script>
+                        param()
+
+# Unroll our arguments, so we can accept freeform input.
+$unrolledArgs = $args | . { process { $_ }}
+
+# Join our arguments into a single string, and treat this as the command line
+$commandLine = $unrolledArgs -join ' '
+
+# The first of these arguments should be the name of the actual executable.
+$ExecutableName, $CommandNames = $unrolledArgs
+
+# If we don't have an executable, return
+if (-not $ExecutableName) {  return }
+
+# If we have a command name, we need to make sure it's not 'help' (to avoid recursion and duplicates)
+$commandNames = @(@($commandNames) -ne 'help')
+
+# If we don't have a help cache, create one.
+if (-not $this.'.HelpCache') {
+    $this | Add-Member -MemberType NoteProperty -Name '.HelpCache' -Value ([Ordered]@{}) -Force
+}
+
+# Determine the key in the help cache
+$propertyName = ".$commandLine help"
+
+# If we don't have a cached help object, create one.
+if (-not $this.'.HelpCache'.$propertyName) {
+    # Get the actual executable
+    $actualExecutable = $ExecutionContext.SessionState.InvokeCommand.GetCommand($ExecutableName,'Application')
+    # If we don't have an actual executable, return
+    if (-not $actualExecutable) { return }
+
+    # Create an empty object so we can easily access it's parser.
+    $dockerHelp = [PSCustomObject]@{PSTypeName='docker.help'}
+
+    # Call the executable and pass it's output to the parser.
+    $parsedHelp = 
+        if (-not $CommandNames) {
+            &amp; $actualExecutable help *&gt;&amp;1 | &amp; $dockerHelp.Parse.Script -CommandLine $commandLine
+        } else {
+            # If we have a command name, pass it to the executable, too
+            $commandNames = @($commandNames)
+            &amp; $actualExecutable help @commandNames *&gt;&amp;1 | &amp; $dockerHelp.Parse.Script -CommandLine $commandLine
+        }
+
+    # If we have options or commands, add them to the help cache.
+    if ($parsedHelp.Options -or $parsedHelp.Commands) {
+        $this.'.HelpCache'[$propertyName] = $parsedHelp
+    }    
+}
+
+# Return the cached help object.
+return $this.'.HelpCache'.$propertyName
+
+
+                    </Script>
+      </ScriptMethod>
+      <ScriptMethod>
+        <Name>GetInputArguments</Name>
+        <Script>
+                        param(
+$InputObject,
+
+[PSObject[]]
+$InputMethods
+)
+
+$currentInputObject = $InputObject
+
+@(:nextInputMethod foreach ($inputMethod in $inputMethods) {
+    $function:InputMethodFunction = $inputMethod.Script
+    # We turn each input method into a function
+    $InputMethodFunction = $ExecutionContext.SessionState.InvokeCommand.GetCommand('InputMethodFunction', 'Function')
+    $inputMethodSplat = [Ordered]@{}
+
+    # and then we can get the input parameters
+    foreach ($potentialInputParameter in $InputMethodFunction.Parameters.Values) {
+        # and try to get the values from the current input object.
+        if ($null -ne $CurrentInputObject.($potentialInputParameter.Name)) {
+            $inputMethodSplat[$potentialInputParameter.Name] = $CurrentInputObject.($potentialInputParameter.Name)
+        } elseif ($potentialInputParameter.Aliases) {
+            # (if we fail, we can try to find each of the aliases in the current object)
+            foreach ($aliasName in $potentialInputParameter.Aliases) {
+                if ($null -ne $CurrentInputObject.$aliasName) {
+                    $inputMethodSplat[$potentialInputParameter.Name] = $CurrentInputObject.$aliasName
+                    break
+                }
+            }
+        }
+    }
+
+    # If any parameters were found, we can run the input method
+    if ($inputMethodSplat.Count) {
+        $inputMethodSplat.psobject.properties.Add([PSNoteProperty]::new('Command', $inputMethod.Script))
+        $inputMethodSplat
+    }
+})
+
+                    </Script>
+      </ScriptMethod>
+      <ScriptMethod>
+        <Name>GetInputTransforms</Name>
+        <Script>
+                        param(
+$InputObject,
+
+[PSObject[]]
+$InputMethods
+)
+
+$currentInputObject = $InputObject
+
+@(:nextInputMethod foreach ($inputMethod in $inputMethods) {
+    $function:InputMethodFunction = $inputMethod.Script
+    # We turn each input method into a function
+    $InputMethodFunction = $ExecutionContext.SessionState.InvokeCommand.GetCommand('InputMethodFunction', 'Function')
+    $inputMethodSplat = [Ordered]@{}
+
+    # and then we can get the input parameters
+    foreach ($potentialInputParameter in $InputMethodFunction.Parameters.Values) {
+        if ($potentialInputParameter.ParameterType -in [string], [switch], [bool]) { continue }    
+
+        if ($currentInputObject -as $potentialInputParameter.ParameterType) {
+            $inputMethodSplat[$potentialInputParameter.Name] = $currentInputObject
+            break
+        }
+    }
+
+    # If any parameters were found, we can run the input method
+    if ($inputMethodSplat.Count) {
+        $inputMethodSplat.psobject.properties.Add([PSNoteProperty]::new('Command', $inputMethod.Script))
+        $inputMethodSplat
+    }
+})
+
+                    </Script>
+      </ScriptMethod>
+      <ScriptMethod>
+        <Name>ParseDockerJson</Name>
+        <Script>
+                        [ValidatePattern('--format \{\{json \.\}\}')]
+param(
+[Parameter(ValueFromPipeline)]
+[string]
+$Content,
+
+[string]
+$CommandLine
+)
+
+
+begin {
+    $myLine = $CommandLine
+    $myFirstWords = @($myLine -split '\s' -match '^\w[\w\-]+$')
+    $myTypeNames = @(for ($wordNumber = $myFirstWords.Length - 1; $wordNumber -ge 0 ; $wordNumber--) {
+        $myFirstWords[0..$wordNumber] -join '.'
+    })
+
+
+    
+}
+process {
+    try {
+
+        $dockerCommandOutput = $content | ConvertFrom-Json
+
+        foreach ($dockerCmdOut in $dockerCommandOutput) {
+            $dockerCmdOut.pstypenames.clear()
+            foreach ($myTypeName in $myTypeNames) {
+                $dockerCmdOut.pstypenames.add($myTypeName)
+            }
+            $dockerCmdOut           
+        }
+    } catch {
+        $convertError = $_
+        Write-Debug "Error Converting from JSON: $($_ | Out-String)"
+        $content
+    }
+}
+
+                    </Script>
+      </ScriptMethod>
+      <ScriptProperty>
+        <Name>Parsers</Name>
+        <GetScriptBlock>
+                        $Wildcard = '?*ocker*'
+$Pattern  = 'Parse'
+$TypeName = 'Rocker.Parser'
+$CollectionTypeName = 'Rocker.Parsers'
+
+
+$Collection = [Ordered]@{PSTypeName=$CollectionTypeName}
+
+@(
+    foreach ($typeData in Get-TypeData -TypeName $Wildcard) {
+        $potentialParsers = @($typeData.Members.Keys -match $Pattern)
+        foreach ($potentialParser in $typeData.Members[$potentialParsers]) {
+            if ($potentialParser -is [management.automation.runspaces.ScriptMethodData]) {
+                $parserFullName = "$($typeData.TypeName).$($potentialParser.Name)"
+                $Collection[$parserFullName] = $potentialParser | 
+                    Add-Member NoteProperty TypeName $typeData.TypeName -Force -PassThru |
+                    Add-Member NoteProperty Name $parserFullName -Force -PassThru
+                $Collection[$parserFullName].pstypenames.add($TypeName)
+            }
+        }
+    }
+
+    $foundCommands = @($ExecutionContext.SessionState.InvokeCommand.GetCommands($Wildcard, 'Alias,Function,Cmdlet', $true) -match $Pattern)
+    if ($foundCommands) {
+        foreach ($commandFound in $foundCommands) {
+            if (-not $commandFound.Name) { continue }
+            $Collection[$commandFound.Name] = $commandFound
+            $Collection[$commandFound.Name].pstypenames.add($TypeName)
+        }
+    }
+        
+)
+
+[PSCustomObject]$Collection
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
+        <Name>Tagline</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Gets module taglines    
+.DESCRIPTION
+    Gets module taglines.  A tagline is an alternate description often used for posts and articles.
+
+    Modules can only have one description, but can have as many taglines as they want.
+#&gt;
+param()
+@(
+    $this.PrivateData.Tagline,
+    $this.PrivateData.Taglines,
+    $this.PrivateData.PSData.Tagline,
+    $this.PrivateData.PSData.Taglines
+) -ne $null | &amp; { process { $_ } }
+
+                    </GetScriptBlock>
+      </ScriptProperty>
+    </Members>
+  </Type>
+  <Type>
+    <Name>Rocker.Parser</Name>
+    <Members>
+      <ScriptMethod>
+        <Name>Validate</Name>
+        <Script>
+                        param(
+[PSObject]
+$Argument
+)
+
+$ThisScriptBlock = if ($this.Script) {
+    $this.Script
+} elseif ($this.ScriptBlock) {
+    $this.ScriptBlock
+}
+
+$validationAttributes =
+    foreach ($attribute in $ThisScriptBlock.Attributes) {
+        if ($attribute -is [ValidateScript]) {
+            $attribute
+        }
+        if ($attribute -is [ValidatePattern]) {
+            $attribute
+        }
+    }
+
+if (-not $validationAttributes) { return $true}
+
+:SomethingIsValid do {
+
+    foreach ($attribute in $validationAttributes) {
+        if ($attribute -is [ValidateScript]) {
+            $this = $_ = $Argument
+            $isValid = &amp; $attribute.ScriptBlock $this
+            if ($isValid) {
+                break SomethingIsValid
+            }
+        }
+        if ($attribute -is [ValidatePattern]) {
+            if (
+                [Regex]::new($attribute.RegexPattern, $attribute.Options, "00:00:00.1").IsMatch("$Argument")
+            ) {
+                break SomethingIsValid
+            }
+        }
+    }
+
+    return $false 
+
+
+} while ($false)
+
+return $true
+
+                    </Script>
+      </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
+    <Name>Rocker.Parsers</Name>
+    <Members>
+      <ScriptMethod>
+        <Name>ForCommand</Name>
+        <Script>
+                        param(
+$CommandLine
+)
+
+foreach ($parser in $this.All) {
+    if ($parser.Validate -and $parser.Validate($commandLine)) {
+        $parser
+    }    
+}
+                    </Script>
+      </ScriptMethod>
+      <ScriptProperty>
+        <Name>All</Name>
+        <GetScriptBlock>
+                        @(foreach ($property in $this.psobject.properties) {
+    if (-not $property.IsInstance) { continue } 
+    if (-not $property -is [psnoteproperty]) { continue } 
+    $property.Value
+})
+
+                    </GetScriptBlock>
+      </ScriptProperty>
+    </Members>
+  </Type>
+</Types>

@@ -1,0 +1,1 @@
+Write-FormatView -TypeName "docker.network.ls" -Property Name, ID, Driver, Labels, CreationTime -AutoSize -GroupByProperty Scope
