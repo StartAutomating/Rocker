@@ -26,9 +26,10 @@ Write-FormatView -TypeName Rocker -Action {
 
     Write-FormatViewExpression -ScriptBlock {
         
+        $columnCount = Get-Random -Minimum 1 -Maximum 7
         @(foreach ($row in 1..2) {
             $(
-                if ($row -eq 1) { '▄' } else { '▄' }
+                if ($row -eq 2) { '◳ ◰ ' * $columnCount } else { '◲ ◱ ' * $columnCount  }
             )
         }) -join [Environment]::NewLine
     } -Style Foreground.Cyan
@@ -39,12 +40,8 @@ Write-FormatView -TypeName Rocker -Action {
     
     Write-FormatViewExpression -Style "Foreground.Blue", "Italic" -ScriptBlock {
         $_.Taglines | Get-Random
-    } 
+    }
     Write-FormatViewExpression -Newline
-
-    <#Write-FormatViewExpression -Style "Foreground.Green" -ScriptBlock {
-        $_.Description
-    }#>
 
     Write-FormatViewExpression -Newline
     Write-FormatViewExpression -Newline
