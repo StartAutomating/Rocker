@@ -178,6 +178,7 @@ function Get-Rocker
         # Now we can get the command name and the rest of the elements
         $myCommandName, $myCommandElements = $myCommandAst.CommandElements
         $myCommandName = if ($MyCommandName) { $myCommandName.Extent.Text } else { $myFirstWords[0] }
+        $MyOriginalArguments = @() + @($args)
 
         # And we can get the input methods for the type data
         $inputMethods = 
@@ -189,37 +190,18 @@ function Get-Rocker
 
         
         # If we have input methods, we can get the input arguments
-        $InputArguments = @(:nextInputMethod foreach ($inputMethod in $inputMethods) {
-            $function:InputMethodFunction = $inputMethod.Script
-            # We turn each input method into a function
-            $InputMethodFunction = $ExecutionContext.SessionState.InvokeCommand.GetCommand('InputMethodFunction', 'Function')
-            $inputMethodSplat = [Ordered]@{}
-
-            # and then we can get the input parameters
-            foreach ($potentialInputParameter in $InputMethodFunction.Parameters.Values) {
-                # and try to get the values from the current input object.
-                if ($null -ne $CurrentInputObject.($potentialInputParameter.Name)) {
-                    $inputMethodSplat[$potentialInputParameter.Name] = $CurrentInputObject.($potentialInputParameter.Name)
-                } elseif ($potentialInputParameter.Aliases) {
-                    # (if we fail, we can try to find each of the aliases in the current object)
-                    foreach ($aliasName in $potentialInputParameter.Aliases) {
-                        if ($null -ne $CurrentInputObject.$aliasName) {
-                            $inputMethodSplat[$potentialInputParameter.Name] = $CurrentInputObject.$aliasName
-                            break
-                        }
-                    }
-                }
-            }
-
+        # If we have input methods, we can get the input arguments
+        $InputArguments = @(foreach ($inputMethodSplat in $rocker.GetInputArguments($CurrentInputObject, $inputMethods)) {
             # If any parameters were found, we can run the input method
             if ($inputMethodSplat.Count) {
-                & $function:InputMethodFunction @inputMethodSplat
+                & $inputMethodSplat.psobject.properties['Command'].Value @inputMethodSplat
             }
         })
         
         # Collect all of the arguments
         $myArgs = @(
-            $args,$InputArguments | # (the original arguments, and any input arguments we found)
+            $MyOriginalArguments,$InputArguments | # (the original arguments, and any input arguments we found)
+                . { process { $_ } } |
                 . { 
                 process {
                     # and then we can process them
@@ -231,8 +213,25 @@ function Get-Rocker
                         $DebugPreference = 'continue'
                     }        
                     elseif ($null -ne $_) {
-                        # If the argument is not null, we can add it to the list of arguments
-                        $_
+                        # If the argument is not null, we'll add it to the list of arguments.
+
+                        # If it's not a string and we have input methods
+                        if ($_ -isnot [string] -and $inputMethods) {
+                            $argObject = $_
+                            # we want to try to transform the input
+                            $potentialTransforms = $rocker.GetInputTransforms($argObject, $inputMethods)                            
+                            if ($potentialTransforms) {
+                                foreach ($potentialTransform in $potentialTransforms) {
+                                    $newArgObject = & $potentialTransform.psobject.properties['Command'].Value @potentialTransform
+                                    if ($newArgObject) { return $newArgObject }
+                                }
+                            } else {
+                                $argObject
+                            }
+                        } else {
+                            $_
+                        }
+                        
                     }
                 }
             }
