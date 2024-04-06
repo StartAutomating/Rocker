@@ -405,6 +405,26 @@ if ($ContainerID) {
     </Members>
   </Type>
   <Type>
+    <Name>docker.run</Name>
+    <Members>
+      <ScriptMethod>
+        <Name>ScriptBlock.Input</Name>
+        <Script>
+                        
+param(
+[Parameter(Mandatory)]
+[ScriptBlock]
+$ScriptBlock
+)
+
+"pwsh"
+"-encodedCommand"
+[Convert]::ToBase64String([Text.Encoding]::Unicode.getBytes("$ScriptBlock"))
+                    </Script>
+      </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
     <Name>docker.system.df</Name>
     <Members>
     </Members>
