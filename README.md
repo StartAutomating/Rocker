@@ -1,5 +1,5 @@
 <div align='center' style='overflow: visible'>
-<img src='Assets/Rocker-animated.svg' style='width:50%;overflow: visible' />
+<img src='Assets/Rocker.png' style='width:50%;overflow: visible' />
 </div>
 
 ## Rocker
