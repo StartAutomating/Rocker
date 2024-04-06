@@ -31,7 +31,7 @@ $currentInputObject = $InputObject
 
     # If any parameters were found, we can run the input method
     if ($inputMethodSplat.Count) {
-        $inputMethodSplat.psobject.properties.Add('Command', $inputMethod.Script)
+        $inputMethodSplat.psobject.properties.Add([PSNoteProperty]::new('Command', $inputMethod.Script))
         $inputMethodSplat
     }
 })
