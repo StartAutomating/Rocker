@@ -18,6 +18,24 @@ function Get-Rocker
         # Get Docker Help
         docker help
     .EXAMPLE
+        # Get Docker Help for a specific command
+        docker help run
+    .EXAMPLE
+        # Run a script in a container
+        docker run --interactive --tty mcr.microsoft.com/powershell {
+            "Hello from Docker! $pid"
+        }        
+    .EXAMPLE
+        # Run a script in a container, 
+        # mount the current directory,
+        # and set an environment variable.
+        docker run --interactive --tty @{
+            "$pwd"="/mnt"
+            message='Hello from Docker!'
+        } mcr.microsoft.com/powershell {
+            "$($env:message) $(@(Get-ChildItem /mnt -recurse -File).Length) files mounted."
+        }
+    .EXAMPLE
         # List all containers,
         docker container ls |            
             docker container pause
