@@ -355,6 +355,51 @@
       </TableControl>
     </View>
     <View>
+      <Name>docker.network.ls</Name>
+      <ViewSelectedBy>
+        <TypeName>docker.network.ls</TypeName>
+      </ViewSelectedBy>
+      <GroupBy>
+        <PropertyName>Scope</PropertyName>
+      </GroupBy>
+      <TableControl>
+        <AutoSize />
+        <TableHeaders>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>Name</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>ID</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>Driver</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>Labels</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>CreationTime</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+    <View>
       <Name>docker.system.df</Name>
       <ViewSelectedBy>
         <TypeName>docker.system.df</TypeName>
