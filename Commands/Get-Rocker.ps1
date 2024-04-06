@@ -13,20 +13,35 @@ function Get-Rocker {
 
         * Most output will become extensible objects.
         * Tab completion for all commands and options.
-        * Pipeline input can be defined at any point.
-    .EXAMPLE 
-        $Rocker
+        * Pipeline input can be defined at any point.       
     .EXAMPLE
+        # Get Docker Help
         docker help
     .EXAMPLE
-        docker container ls | # List all containers
-            docker container pause # unpause them
+        # List all containers,
+        docker container ls |            
+            docker container pause
+            # and pause them.
     .EXAMPLE
-        docker container ls | # List all containers
-            docker container unpause # and start them up again
+        # List all containers,
+        docker container ls |            
+            docker container unpause 
+            # and start them up again.
     .EXAMPLE
-        docker container ls | # List all containers
-            docker history # get their history 
+        # List all containers.
+        docker container ls |            
+            docker history 
+            # get their history 
+    .EXAMPLE
+        # Stop all running containers.
+        docker container ls |
+            docker container stop
+    .EXAMPLE
+        # Get system disk information
+        docker system df
+    .EXAMPLE
+        # Get system info
+        docker system info
     #>
     [ArgumentCompleter({
         param($wordToComplete, $commandAst, $cursorPosition)
