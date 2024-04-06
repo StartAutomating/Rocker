@@ -32,6 +32,36 @@ Import-Module Rocker -Force -PassThru
 
 ~~~PowerShell
 
+        # Get Docker Help for a specific command
+        docker help run
+
+~~~
+
+~~~PowerShell
+
+        # Run a script in a container
+        docker run --interactive --tty mcr.microsoft.com/powershell {
+            "Hello from Docker! $pid"
+        }
+
+~~~
+
+~~~PowerShell
+
+        # Run a script in a container, 
+        # mount the current directory,
+        # and set an environment variable.
+        docker run --interactive --tty @{
+            "$pwd"="/mnt"
+            message='Hello from Docker!'
+        } mcr.microsoft.com/powershell {
+            "$($env:message) $(@(Get-ChildItem /mnt -recurse -File).Length) files mounted."
+        }
+
+~~~
+
+~~~PowerShell
+
         # List all containers,
         docker container ls |            
             docker container pause
