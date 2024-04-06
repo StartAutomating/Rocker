@@ -543,9 +543,10 @@
               <ExpressionBinding>
                 <ScriptBlock>
         
+        $columnCount = Get-Random -Minimum 1 -Maximum 7
         @(foreach ($row in 1..2) {
             $(
-                if ($row -eq 1) { '▄' } else { '▄' }
+                if ($row -eq 2) { '◳ ◰ ' * $columnCount } else { '◲ ◱ ' * $columnCount  }
             )
         }) -join [Environment]::NewLine
     </ScriptBlock>
