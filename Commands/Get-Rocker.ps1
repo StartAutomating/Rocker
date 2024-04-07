@@ -232,6 +232,9 @@ function Get-Rocker {
                     elseif ($_ -match '-{1,2}Debug') {
                         $DebugPreference = 'continue'
                     }        
+                    elseif ($_ -match '-{1,2}WhatIf') {
+                        $WhatIfPreference = $true
+                    }                    
                     elseif ($null -ne $_) {
                         # If the argument is not null, we'll add it to the list of arguments.
 
@@ -285,7 +288,7 @@ function Get-Rocker {
         # If we have a command that supports format, and we're not asking for help, add the format argument.
         if ($DockerCommandHelp.SupportsFormat -and -not ($myfirstWords -match '-{0,2}help')) {
             $myArgs += @("--format", "{{json .}}")
-        }    
+        }
         
         # Get the parser, based off of the entire command line
         $myCommandLine = @($myFirstWords) + $myArgs
@@ -303,6 +306,11 @@ function Get-Rocker {
         # Return if there is no command to run at this point.
         # (if this is the case, docker is probably not installed.)
         if (-not $CommandToRun) { return }
+
+        Write-Verbose "Running $commandToRun $MyArgs"
+        if ($WhatIfPreference) {
+            return @($commandline) + $myArgs
+        }
 
         # If there were not parsers for a command, 
         if (-not $parsersForCommand) {
@@ -328,8 +336,7 @@ function Get-Rocker {
         # and then begin each steppable pipeline.
         foreach ($ParserSteppablePipeline in $ParserSteppablePipelines) {
             $ParserSteppablePipeline.Begin($true)
-        }
-
+        }                
         # Then we run the command, redirecting the output to the steppable pipelines.
         & $commandToRun @myArgs *>&1 | . { process {
             $currentOutput = $_
