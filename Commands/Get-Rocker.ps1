@@ -202,16 +202,22 @@ function Get-Rocker {
 
         # And we can get the input methods for the type data
         $inputMethods = 
-            foreach ($typeData in $myTypeData) {
+            @(foreach ($typeData in $myTypeData) {
                 $TypeData.Members[
                     $typeData.Members.Keys -match '(?>^|\p{P})(?>Inputs?|Parameters?)(?>$|\p{P})'
                 ] | OnlyScriptMethods -typedata $TypeData
-            }
+            })
 
         
+        # If we have input methods, we can get the pending input arguments
+        $pendingInputArguments = @(try {
+            $rocker.GetInputArguments($CurrentInputObject, $inputMethods)
+        } catch {
+            Write-Debug "$($_ | Out-String)"
+        })
+        
         # If we have input methods, we can get the input arguments
-        # If we have input methods, we can get the input arguments
-        $InputArguments = @(foreach ($inputMethodSplat in $rocker.GetInputArguments($CurrentInputObject, $inputMethods)) {
+        $InputArguments = @(foreach ($inputMethodSplat in $pendingInputArguments) {
             # If any parameters were found, we can run the input method
             if ($inputMethodSplat.Count) {
                 & $inputMethodSplat.psobject.properties['Command'].Value @inputMethodSplat
