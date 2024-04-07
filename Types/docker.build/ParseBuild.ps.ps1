@@ -1,9 +1,17 @@
+<#
+.SYNOPSIS
+    Parses the output of `docker build`.
+.DESCRIPTION
+    Parses the output of `docker build` and writes progress bars for each layer.
+#>
 [ValidatePattern("^(?>docker(?:(?>-|\s)compose)?\s{1,}build)")]
 param(
+# The content being parsed.
 [vfp()]
 [string]
 $Content,
 
+# The command line that produced the content.
 [string]
 $CommandLine
 )
