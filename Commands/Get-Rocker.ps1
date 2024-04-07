@@ -199,6 +199,24 @@ function Get-Rocker {
         $myCommandName, $myCommandElements = $myCommandAst.CommandElements
         $myCommandName = if ($MyCommandName) { $myCommandName.Extent.Text } else { $myFirstWords[0] }
         $MyOriginalArguments = @() + @($args)
+        if ($MyOriginalArguments -match '-{1,2}AsJob') {
+            $MyOriginalArguments = @($MyOriginalArguments -notmatch '-{1,2}AsJob')
+            $jobDefinition = [ScriptBlock]::Create(
+                @(
+                    "Import-Module '$(
+                        "$($rocker | Split-Path | Join-Path -ChildPath 'Rocker.psd1')" -replace "'","''"
+                    )'"
+                    "$($myCommandName) @args"
+                ) -join [Environment]::NewLine
+            )
+            $startThreadJobCommand = $ExecutionContext.SessionState.InvokeCommand.GetCommand('Start-ThreadJob', 'Cmdlet')
+            if ($startThreadJobCommand) {
+                return (Start-ThreadJob -ScriptBlock $jobDefinition -ArgumentList $MyOriginalArguments)
+            } else {
+                return (Start-Job -ScriptBlock $jobDefinition -ArgumentList $MyOriginalArguments -WorkingDirectory $pwd)
+            }
+            
+        }
 
         # And we can get the input methods for the type data
         $inputMethods = 
