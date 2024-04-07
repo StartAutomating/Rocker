@@ -1,9 +1,17 @@
+<#
+.SYNOPSIS
+    Parses the output of `docker build`.
+.DESCRIPTION
+    Parses the output of `docker build` and writes progress bars for each layer.
+#>
 [ValidatePattern("^(?>docker(?:(?>-|\s)compose)?\s{1,}build)")]
 param(
+# The content being parsed.
 [Parameter(ValueFromPipeline)]
 [string]
 $Content,
 
+# The command line that produced the content.
 [string]
 $CommandLine
 )
@@ -33,10 +41,11 @@ process {
         $LayerMessages["$layerNumber"] += $lineOut
         $layerProgressId = $ProgressId + $layerNumber
         $timeSince  = [DateTime]::Now - $BuildStartTime
-        if ($lineOut -match '^\#\d+\s{1,}done\s{1,}(?<t>[\d\.]+)s') {            
-            # Layer is done, now is a good time to output            
+        if ($lineOut -match '^\#\d+\s{1,}done\s{1,}(?<t>[\d\.]+)s' -or $lineOut -match '^\#\d+\s{1,}cached') {            
+            # Layer is done or cached, complete the progress bar
             Write-Progress -Activity "$LayerNumber @ $timeSince" -Status "$lineOut" -id $layerProgressId -Completed
         } else {
+            # Layer is not done or cached, write progress.
             Write-Progress -Activity "$LayerNumber @ $timeSince" -Status "$lineOut" -id $layerProgressId
         }
     } else {

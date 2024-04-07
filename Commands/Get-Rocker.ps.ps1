@@ -197,19 +197,43 @@ function Get-Rocker
         $myCommandName, $myCommandElements = $myCommandAst.CommandElements
         $myCommandName = if ($MyCommandName) { $myCommandName.Extent.Text } else { $myFirstWords[0] }
         $MyOriginalArguments = @() + @($args)
+        if ($MyOriginalArguments -match '-{1,2}AsJob') {
+            $MyOriginalArguments = @($MyOriginalArguments -notmatch '-{1,2}AsJob')
+            $jobDefinition = [ScriptBlock]::Create(
+                @(
+                    "Import-Module '$(
+                        "$($rocker | Split-Path | Join-Path -ChildPath 'Rocker.psd1')" -replace "'","''"
+                    )'"
+                    "$($myCommandName) @args"
+                ) -join [Environment]::NewLine
+            )
+            $startThreadJobCommand = $ExecutionContext.SessionState.InvokeCommand.GetCommand('Start-ThreadJob', 'Cmdlet')
+            if ($startThreadJobCommand) {
+                return (Start-ThreadJob -ScriptBlock $jobDefinition -ArgumentList $MyOriginalArguments)
+            } else {
+                return (Start-Job -ScriptBlock $jobDefinition -ArgumentList $MyOriginalArguments -WorkingDirectory $pwd)
+            }
+            
+        }
 
         # And we can get the input methods for the type data
         $inputMethods = 
-            foreach ($typeData in $myTypeData) {
+            @(foreach ($typeData in $myTypeData) {
                 $TypeData.Members[
                     $typeData.Members.Keys -match '(?>^|\p{P})(?>Inputs?|Parameters?)(?>$|\p{P})'
                 ] | OnlyScriptMethods -typedata $TypeData
-            }
+            })
 
         
+        # If we have input methods, we can get the pending input arguments
+        $pendingInputArguments = @(try {
+            $rocker.GetInputArguments($CurrentInputObject, $inputMethods)
+        } catch {
+            Write-Debug "$($_ | Out-String)"
+        })
+        
         # If we have input methods, we can get the input arguments
-        # If we have input methods, we can get the input arguments
-        $InputArguments = @(foreach ($inputMethodSplat in $rocker.GetInputArguments($CurrentInputObject, $inputMethods)) {
+        $InputArguments = @(foreach ($inputMethodSplat in $pendingInputArguments) {
             # If any parameters were found, we can run the input method
             if ($inputMethodSplat.Count) {
                 & $inputMethodSplat.psobject.properties['Command'].Value @inputMethodSplat
@@ -230,6 +254,9 @@ function Get-Rocker
                     elseif ($_ -match '-{1,2}Debug') {
                         $DebugPreference = 'continue'
                     }        
+                    elseif ($_ -match '-{1,2}WhatIf') {
+                        $WhatIfPreference = $true
+                    }                    
                     elseif ($null -ne $_) {
                         # If the argument is not null, we'll add it to the list of arguments.
 
@@ -283,7 +310,7 @@ function Get-Rocker
         # If we have a command that supports format, and we're not asking for help, add the format argument.
         if ($DockerCommandHelp.SupportsFormat -and -not ($myfirstWords -match '-{0,2}help')) {
             $myArgs += @("--format", "{{json .}}")
-        }    
+        }
         
         # Get the parser, based off of the entire command line
         $myCommandLine = @($myFirstWords) + $myArgs
@@ -301,6 +328,11 @@ function Get-Rocker
         # Return if there is no command to run at this point.
         # (if this is the case, docker is probably not installed.)
         return if -not $CommandToRun
+
+        Write-Verbose "Running $commandToRun $MyArgs"
+        if ($WhatIfPreference) {
+            return @($commandline) + $myArgs
+        }
 
         # If there were not parsers for a command, 
         if (-not $parsersForCommand) {
@@ -326,15 +358,14 @@ function Get-Rocker
         # and then begin each steppable pipeline.
         foreach ($ParserSteppablePipeline in $ParserSteppablePipelines) {
             $ParserSteppablePipeline.Begin($true)
-        }
-
+        }                
         # Then we run the command, redirecting the output to the steppable pipelines.
         & $commandToRun @myArgs *>&1 | . { process {
             $currentOutput = $_
 
-            # Skip remote exceptions
+            # Skip stringified remote exceptions
             # (they come back from the pipeline when a command decides to communicate over standard error instead of standard output.)
-            if ($currentOutput -is [Management.Automation.RemoteException]) {return}
+            if ($currentOutput -match '^System\.Management\.Automation\.RemoteException$') {return}
 
             # Process each of the outputs
             foreach ($ParserSteppablePipeline in $ParserSteppablePipelines) {

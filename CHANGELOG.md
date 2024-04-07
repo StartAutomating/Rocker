@@ -1,5 +1,20 @@
+Rocking Docker with PowerShell
+
 > Like It? [Star It](https://github.com/StartAutomating/Rocker)
 > Love It? [Support It](https://github.com/sponsors/StartAutomating)
+
+## Rocker 0.1.1
+
+* Better PowerShell convention support
+  * docker ... -AsJob (#63)
+  * docker ... -WhatIf (#60)
+* Get-Rocker Input Improvements (#61)
+* More Docker Support
+  * docker build parser progress bar improvement (#62)
+  * docker run @{1001=80} will now --publish 1001:80 (#57)
+  * docker network commands accept .NetworkID as an input property (#59)
+
+---
 
 ## Rocker 0.1
 
