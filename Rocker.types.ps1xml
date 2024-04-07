@@ -385,6 +385,33 @@ if ($ContainerID) {
     </Members>
   </Type>
   <Type>
+    <Name>docker.network</Name>
+    <Members>
+      <ScriptMethod>
+        <Name>NetworkID.Input</Name>
+        <Script>
+                        &lt;#
+.SYNOPSIS
+    Gets a network ID as `docker network` input.
+.DESCRIPTION
+    Converts a network ID to a list of arguments to `docker network`.
+#&gt;
+param(
+# The Container ID.
+[string]
+$NetworkID
+)
+
+if ($NetworkID) {
+    $NetworkID
+}
+
+
+                    </Script>
+      </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
     <Name>docker.network.ls</Name>
     <Members>
       <AliasProperty>
