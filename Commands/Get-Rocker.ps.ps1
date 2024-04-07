@@ -332,9 +332,9 @@ function Get-Rocker
         & $commandToRun @myArgs *>&1 | . { process {
             $currentOutput = $_
 
-            # Skip remote exceptions
+            # Skip stringified remote exceptions
             # (they come back from the pipeline when a command decides to communicate over standard error instead of standard output.)
-            if ($currentOutput -is [Management.Automation.RemoteException]) {return}
+            if ($currentOutput -match '^System\.Management\.Automation\.RemoteException$') {return}
 
             # Process each of the outputs
             foreach ($ParserSteppablePipeline in $ParserSteppablePipelines) {
