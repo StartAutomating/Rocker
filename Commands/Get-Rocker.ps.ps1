@@ -347,10 +347,10 @@ function Get-Rocker
         $ParserSteppablePipelines = @(
             foreach ($parser in $parsersForCommand) {
                 if ($parser.Script) {
-                    { & $parser.Script -CommandLine $myLine}.GetSteppablePipeline()
+                    { & $parser.Script -CommandLine ($myCommandLine -join ' ')}.GetSteppablePipeline()
                     
                 } else {
-                    { & $parser -CommandLine $myLine}.GetSteppablePipeline()
+                    { & $parser -CommandLine ($myCommandLine -join ' ')}.GetSteppablePipeline()
                 }
             }
         )
