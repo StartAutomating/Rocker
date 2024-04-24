@@ -16,7 +16,7 @@ describe Rocker {
     it 'Can get system statistics' {
         $systemDiskInfo = docker system df
         $systemDiskInfo | 
-            SSelect-Object -First 1 | 
+            Select-Object -First 1 | 
             ForEach-Object {$_.Size -replace '\s' -as [double] } |
             Should -BeGreaterThan 0
     }
