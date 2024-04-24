@@ -341,18 +341,17 @@ function Get-Rocker {
             # just run it and redirect everything to output
             & $commandToRun @myArgs *>&1
             return # and return
-        }    
-
+        }
         
         # If there were parsers for the command, we will pipe to them.
         # To do this, we'll need to create a steppable pipeline for each.
         $ParserSteppablePipelines = @(
             foreach ($parser in $parsersForCommand) {
                 if ($parser.Script) {
-                    { & $parser.Script -CommandLine $myLine}.GetSteppablePipeline()
+                    { & $parser.Script -CommandLine ($myCommandLine -join ' ')}.GetSteppablePipeline()
                     
                 } else {
-                    { & $parser -CommandLine $myLine}.GetSteppablePipeline()
+                    { & $parser -CommandLine ($myCommandLine -join ' ')}.GetSteppablePipeline()
                 }
             }
         )
