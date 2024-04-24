@@ -15,7 +15,10 @@ describe Rocker {
 
     it 'Can get system statistics' {
         $systemDiskInfo = docker system df
-        $systemDiskInfo.Size -as [double[]] | Should -BeGreaterThan 1
+        $systemDiskInfo | 
+            SSelect-Object -First 1 | 
+            ForEach-Object {$_.Size -replace '\s' -as [double] } |
+            Should -BeGreaterThan 0
     }
 
     it 'Can pause and unpause all containers' {
@@ -25,6 +28,8 @@ describe Rocker {
 
     it 'Can parse docker help' {
         $dockerHelpOut = docker help
-        $dockerHelpOut.pstypenaemes[0] | Should -Be 'docker.help'
+        $dockerHelpOut.pstypenames | 
+            Select-Object -First 1 | 
+            Should -Be 'docker.help'
     }
 }
