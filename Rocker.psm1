@@ -30,6 +30,10 @@ Write-Verbose "$($MyModuleCommands.Count) module commands"
 :nextCommand foreach ($myModuleCommand in $MyModuleCommands) {
     $TheCommandName = $myModuleCommand.Name
     if ($myModuleCommand.ResolvedCommand) {
+        $applicationExists = $ExecutionContext.SessionState.InvokeCommand.GetCommand($myModuleCommand.Name,'Application')
+        if (-not $applicationExists) {
+            Write-Warning "'$($myModuleCommand.Name)' was not found in the path.  Rocker cannot rock this command until it is installed."
+        }
         $myModuleCommand = $myModuleCommand.ResolvedCommand
     }
     if ($myModuleCommand.ScriptBlock.Attributes) {
