@@ -316,6 +316,9 @@ function Get-Rocker {
         
         # Get the parser, based off of the entire command line
         $myCommandLine = @($myFirstWords) + $myArgs
+        # Pick out only unique entries (in case of duplicates in the command line)
+        $myCommandLine = $myCommandLine | Select-Object -Unique
+        
         $parsersForCommand = $rocker.Parsers.ForCommand($myCommandLine -join ' ')
 
         # If we have no command to run,
