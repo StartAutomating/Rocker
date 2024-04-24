@@ -339,8 +339,7 @@ function Get-Rocker
             # just run it and redirect everything to output
             & $commandToRun @myArgs *>&1
             return # and return
-        }    
-
+        }
         
         # If there were parsers for the command, we will pipe to them.
         # To do this, we'll need to create a steppable pipeline for each.
