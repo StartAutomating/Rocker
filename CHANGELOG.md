@@ -3,7 +3,22 @@ Rocking Docker with PowerShell
 > Like It? [Star It](https://github.com/StartAutomating/Rocker)
 > Love It? [Support It](https://github.com/sponsors/StartAutomating)
 
-## Rocker 0.1.1
+## Rocker 0.1.2:
+
+* Rocker in Docker (#72)
+  * DockerFile (#73)
+  * Publishing to ghcr.io (#74)
+* docker diff
+  * ParseDiff (#70)
+  * Formatting (#71)
+* General Improvements
+  * Tests (#65)
+  * Better Error Experience when Missing Docker (#66)
+  * Get-Rocker parsing improvements (#75)
+
+---
+
+## Rocker 0.1.1:
 
 * Better PowerShell convention support
   * docker ... -AsJob (#63)

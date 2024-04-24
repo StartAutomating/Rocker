@@ -22,19 +22,26 @@ function Get-Rocker
         docker help run
     .EXAMPLE
         # Run a script in a container
-        docker run --interactive --tty mcr.microsoft.com/powershell {
+        docker run mcr.microsoft.com/powershell {
             "Hello from Docker! $pid"
-        }        
+        }
+    .EXAMPLE
+        # Run an nginx container, publishing port 8080 on the host.
+        docker run --detach @{8080=80} nginx
     .EXAMPLE
         # Run a script in a container, 
         # mount the current directory,
         # and set an environment variable.
-        docker run --interactive --tty @{
+        docker run @{
             "$pwd"="/mnt"
             message='Hello from Docker!'
         } mcr.microsoft.com/powershell {
             "$($env:message) $(@(Get-ChildItem /mnt -recurse -File).Length) files mounted."
         }
+    .EXAMPLE
+        # List all containers
+        docker container ls |
+            docker diff # show their differences from the image.
     .EXAMPLE
         # List all containers,
         docker container ls |            
@@ -314,12 +321,21 @@ function Get-Rocker
         
         # Get the parser, based off of the entire command line
         $myCommandLine = @($myFirstWords) + $myArgs
+        # Pick out only unique entries (in case of duplicates in the command line)
+        $myCommandLine = @($myCommandLine | Select-Object -Unique)
+
         $parsersForCommand = $rocker.Parsers.ForCommand($myCommandLine -join ' ')
 
         # If we have no command to run,
         if (-not $CommandToRun) {
             # fall back on the first command in the application map
-            $CommandToRun = $rocker.'.ApplicationMap'[0]
+            if ($rocker.'.ApplicationMap' -and $rocker.'.ApplicationMap'.Keys.Length -ge 1) {
+                $CommandToRun = $rocker.'.ApplicationMap'[0]
+            } else {
+                # or the docker command
+                $CommandToRun = $script:DockerApplication
+            }
+            
             if (($myFirstWords.Length -eq 1) -and -not $parsersForCommand) {
                 $parsersForCommand = $rocker.Parsers.ForCommand("docker help")
             }
@@ -327,7 +343,10 @@ function Get-Rocker
 
         # Return if there is no command to run at this point.
         # (if this is the case, docker is probably not installed.)
-        return if -not $CommandToRun
+        return if -not $CommandToRun {
+            Write-Error "No command to run.  Docker is probably not installed."
+            return
+        }
 
         Write-Verbose "Running $commandToRun $MyArgs"
         if ($WhatIfPreference) {
@@ -339,18 +358,17 @@ function Get-Rocker
             # just run it and redirect everything to output
             & $commandToRun @myArgs *>&1
             return # and return
-        }    
-
+        }
         
         # If there were parsers for the command, we will pipe to them.
         # To do this, we'll need to create a steppable pipeline for each.
         $ParserSteppablePipelines = @(
             foreach ($parser in $parsersForCommand) {
                 if ($parser.Script) {
-                    { & $parser.Script -CommandLine $myLine}.GetSteppablePipeline()
+                    { & $parser.Script -CommandLine ($myCommandLine -join ' ')}.GetSteppablePipeline()
                     
                 } else {
-                    { & $parser -CommandLine $myLine}.GetSteppablePipeline()
+                    { & $parser -CommandLine ($myCommandLine -join ' ')}.GetSteppablePipeline()
                 }
             }
         )

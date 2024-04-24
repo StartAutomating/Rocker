@@ -40,9 +40,16 @@ Import-Module Rocker -Force -PassThru
 ~~~PowerShell
 
         # Run a script in a container
-        docker run --interactive --tty mcr.microsoft.com/powershell {
+        docker run mcr.microsoft.com/powershell {
             "Hello from Docker! $pid"
         }
+
+~~~
+
+~~~PowerShell
+
+        # Run an nginx container, publishing port 8080 on the host.
+        docker run --detach @{8080=80} nginx
 
 ~~~
 
@@ -51,12 +58,20 @@ Import-Module Rocker -Force -PassThru
         # Run a script in a container, 
         # mount the current directory,
         # and set an environment variable.
-        docker run --interactive --tty @{
+        docker run @{
             "$pwd"="/mnt"
             message='Hello from Docker!'
         } mcr.microsoft.com/powershell {
             "$($env:message) $(@(Get-ChildItem /mnt -recurse -File).Length) files mounted."
         }
+
+~~~
+
+~~~PowerShell
+
+        # List all containers
+        docker container ls |
+            docker diff # show their differences from the image.
 
 ~~~
 

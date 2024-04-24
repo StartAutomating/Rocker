@@ -1,4 +1,4 @@
-<!-- Generated with EZOut 2.0.5: Install-Module EZOut or https://github.com/StartAutomating/EZOut -->
+<!-- Generated with EZOut 2.0.6: Install-Module EZOut or https://github.com/StartAutomating/EZOut -->
 <Configuration>
   <ViewDefinitions>
     <View>
@@ -36,6 +36,35 @@
               </TableColumnItem>
               <TableColumnItem>
                 <PropertyName>CreationTime</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+    <View>
+      <Name>docker.diff</Name>
+      <ViewSelectedBy>
+        <TypeName>docker.diff</TypeName>
+      </ViewSelectedBy>
+      <GroupBy>
+        <PropertyName>ContainerID</PropertyName>
+      </GroupBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>ChangeType</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>Path</PropertyName>
               </TableColumnItem>
             </TableColumnItems>
           </TableRowEntry>
