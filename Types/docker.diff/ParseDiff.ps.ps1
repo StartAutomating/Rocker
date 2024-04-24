@@ -22,7 +22,8 @@ $CommandLine
 )
 
 begin {
-    $ContainerID = @($CommandLine) -match '\s{1,}(?<id>[0-9a-f]+)(?>\s{1,}|$)' -replace '\s'
+    $matched = @($CommandLine) -match '(?<id>[0-9a-f]{8,})'    
+    $ContainerID = $matches.id
 }
 
 process {
