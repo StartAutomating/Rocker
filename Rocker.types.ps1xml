@@ -186,7 +186,8 @@ $CommandLine
 )
 
 begin {
-    $ContainerID = @($CommandLine) -match '\s{1,}(?&lt;id&gt;[0-9a-f]+)(?&gt;\s{1,}|$)' -replace '\s'
+    $matched = @($CommandLine) -match '(?&lt;id&gt;[0-9a-f]{8,})'    
+    $ContainerID = $matches.id
 }
 
 process {
