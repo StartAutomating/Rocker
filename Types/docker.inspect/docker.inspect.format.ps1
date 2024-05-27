@@ -9,9 +9,10 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
 
     Write-FormatViewExpression -Newline
 
+    
     Write-FormatViewExpression -ScriptBlock {
         $_.Os, $_.Architecture -join '/'
-    } -Style 'Foreground.Cyan'
+    } -Style 'Foreground.Cyan' -If { $_.Os -and $_.Architecture}
 
     Write-FormatViewExpression -ScriptBlock {
         " $(if ($_.Size -gt 1GB) {
@@ -23,9 +24,9 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
         } else {
             $_.Size
         })"
-    } -Style 'Foreground.Blue'
+    } -Style 'Foreground.Blue' -If { $_.Size }
     
-    Write-FormatViewExpression -Text " @ " -Style 'Foreground.Cyan'
+    Write-FormatViewExpression -Text " @ " -Style 'Foreground.Cyan' -If { $_.Size }
 
     Write-FormatViewExpression -ScriptBlock {
         ($_.Created -as [DateTime]).ToLongDateString() + " " + ($_.Created -as [DateTime]).ToLongTimeString()
@@ -35,21 +36,22 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
 
     Write-FormatViewExpression -ScriptBlock {
         $_.Id -replace '^sha256:'
-    }
-    Write-FormatViewExpression -Newline
-
-    Write-FormatViewExpression -ScriptBlock {
-        if ($PSStyle) {
-            $PSStyle.OutputRendering = 'Ansi'
-        }        
-        $_.Config.Labels | Format-List | Out-String
-    }
+    }        
 }
 
 Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.container.inspect -Name json -Action {
     Write-FormatViewExpression -ScriptBlock {
         $_ | ConvertTo-Json -Depth 10
     } 
+}
+
+Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.container.inspect -Name labels -Action {
+    Write-FormatViewExpression -ScriptBlock {
+        if ($PSStyle) {
+            $PSStyle.OutputRendering = 'Ansi'
+        }        
+        $_.Config.labels | Format-List | Out-String
+    }
 }
 
 Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.container.inspect -Name Default -Property RepoTags, Size -VirtualProperty @{
