@@ -57,13 +57,13 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
             if ($splitBindings.Length -ge 2) {
                 $internalBinding = $splitBindings[-1]
                 $externalBinding = $splitBindings[0..($splitBindings.Length - 2)] -join ':' -replace '[\\/]', ([IO.Path]::DirectorySeparatorChar)
-                $maskedBinding   = if ($home) {
-                    $externalBinding -replace ([Regex]::Escape($home)), '~'
+                $maskedBinding   = if ("$home") {
+                    $externalBinding -replace ([Regex]::Escape("$home")), '~'
                 } else {
                     $externalBinding
                 }
                 if ((Test-Path $externalBinding) -and $psStyle.FormatHyperlink) {
-                    $psStyle.FormatHyperlink($externalBinding, $maskedBinding) + '->[' + $internalBinding + ']'
+                    $psStyle.FormatHyperlink($maskedBinding, $externalBinding) + '->[' + $internalBinding + ']'
                 } else {
                     $externalBinding + '->' + $internalBinding
                 }
