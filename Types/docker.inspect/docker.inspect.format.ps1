@@ -35,8 +35,14 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
 
     Write-FormatViewExpression -If { $_.HostConfig.PortBindings } -ScriptBlock {
         (@(foreach ($portBinding in $_.HostConfig.PortBindings.psobject.properties) {
-            $linkUri = "http://$($portBinding.value.HostIP, $portBinding.value.HostPort -ne '' -join ':')/"
-            $linkText = $($portBinding.value.HostIP, $portBinding.value.HostPort -ne '' -join ':') + '->' + $portBinding.Name
+            $linkUri = "http://$(
+                $(if ($portBinding.value.HostIP) { 
+                    $portBinding.value.HostIP
+                } else {
+                    "localhost"
+                }), $portBinding.value.HostPort -ne '' -join ':'
+            )/"
+            $linkText = $linkUri + '->' + $portBinding.Name
             if ($PSStyle.FormatHyperlink) {
                 $PSStyle.FormatHyperlink($linkUri, $linkText)
             } else {
@@ -46,7 +52,7 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
     } -Style 'Foreground.Yellow'
 
     Write-FormatViewExpression -If { $_.HostConfig.Binds} -ScriptBlock {
-        foreach ($hostBind in $_.HostConfig.Binds -split [Environment]::NewLine) {
+        (@(foreach ($hostBind in $_.HostConfig.Binds -split [Environment]::NewLine) {
             $splitBindings = @($hostBind -split ":")
             if ($splitBindings.Length -ge 2) {
                 $internalBinding = $splitBindings[-1]
@@ -59,7 +65,7 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
                     }    
                 }
             }
-        }
+        }) -join [Environment]::NewLine) + [Environment]::NewLine
     } -Style 'Foreground.Yellow' 
 
     Write-FormatViewExpression -ScriptBlock {
