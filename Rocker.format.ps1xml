@@ -703,7 +703,7 @@
             )/"
             $linkText = $linkUri + '-&gt;' + $portBinding.Name
             if ($PSStyle.FormatHyperlink) {
-                $PSStyle.FormatHyperlink($linkUri, $linkUri)  + '-&gt;[' + $portBinding.Name + ']'
+                $portBinding.Name, '-&gt;', $PSStyle.FormatHyperlink($linkUri, $linkUri) -join ' '
             } else {
                 $linkText
             }
@@ -771,9 +771,9 @@
                     $externalBinding
                 }
                 if ((Test-Path $externalBinding) -and $psStyle.FormatHyperlink) {
-                    $psStyle.FormatHyperlink($maskedBinding, $externalBinding) + '-&gt;[' + $internalBinding + ']'
+                    $internalBinding,'-&gt;',$psStyle.FormatHyperlink($maskedBinding, $externalBinding) -join  ' '
                 } else {
-                    $externalBinding + '-&gt;' + $internalBinding
+                    $internalBinding, '-&gt;', $externalBinding -join ' '
                 }
             }
         }) -join [Environment]::NewLine) + [Environment]::NewLine
