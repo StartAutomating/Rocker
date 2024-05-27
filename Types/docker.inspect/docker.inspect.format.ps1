@@ -44,7 +44,7 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
             )/"
             $linkText = $linkUri + '->' + $portBinding.Name
             if ($PSStyle.FormatHyperlink) {
-                $PSStyle.FormatHyperlink($linkUri, $linkText)
+                $PSStyle.FormatHyperlink($linkText, $linkUri)
             } else {
                 $linkText
             }
@@ -57,20 +57,18 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
             if ($splitBindings.Length -ge 2) {
                 $internalBinding = $splitBindings[-1]
                 $externalBinding = $splitBindings[0..($splitBindings.Length - 2)] -join ':' -replace '[\\/]', ([IO.Path]::DirectorySeparatorChar)
-                if (Test-Path $externalBinding) {
-                    if ($psStyle.FormatHyperlink) {
-                        $psStyle.FormatHyperlink($externalBinding, $externalBinding) + '->' + $internalBinding
-                    } else {
-                        $externalBinding + '->' + $internalBinding
-                    }    
+                if (Test-Path $externalBinding -and $psStyle.FormatHyperlink) {                
+                    $psStyle.FormatHyperlink($externalBinding, $externalBinding) + '->' + $internalBinding
+                } else {
+                    $externalBinding + '->' + $internalBinding
                 }
             }
         }) -join [Environment]::NewLine) + [Environment]::NewLine
-    } -Style 'Foreground.Yellow' 
+    } -Style 'Foreground.Yellow'
 
     Write-FormatViewExpression -ScriptBlock {
         $_.Id -replace '^sha256:'
-    }        
+    }
 }
 
 Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.container.inspect -Name json -Action {
