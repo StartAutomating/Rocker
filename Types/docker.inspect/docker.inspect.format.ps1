@@ -1,4 +1,4 @@
-Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.container.inspect -ViewName Default -Action {
+Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.container.inspect -Name Default -Action {
     Write-FormatViewExpression -Action {
         $_.RepoTags        
     } -Style 'Foreground.Cyan'
@@ -25,13 +25,13 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
 
 } -GroupByProperty Os
 
-Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.container.inspect -ViewName json -Action {
+Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.container.inspect -Name json -Action {
     Write-FormatViewExpression -Action {
         $_ | ConvertTo-Json -Depth 10
     } 
 } -GroupByProperty Os
 
-Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.container.inspect -ViewName Default -Property RepoTags, Size -VirtualProperty @{
+Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.container.inspect -Name Default -Property RepoTags, Size -VirtualProperty @{
     Size = {
         if ($_.Size -gt 1GB) {
             ($_.Size / 1GB) + "gb"
