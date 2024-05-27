@@ -1,11 +1,11 @@
 Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.container.inspect -Name Default -Action {
-    Write-FormatViewExpression -Action {
+    Write-FormatViewExpression -ScriptBlock {
         $_.RepoTags        
     } -Style 'Foreground.Cyan'
 
     Write-FormatViewExpression -Newline
 
-    Write-FormatViewExpression -Action {
+    Write-FormatViewExpression -ScriptBlock {
         "$(if ($_.Size -gt 1GB) {
             ($_.Size / 1GB) + "gb"
         } elseif ($_.Size -gt 1MB) {
@@ -21,7 +21,7 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
         " @ "
     } -Style 'Foreground.Cyan'
 
-    Write-FormatViewExpression -Action {
+    Write-FormatViewExpression -ScriptBlock {
         ($_.Created -as [DateTime]).ToLongDateString() + " " + ($_.Created -as [DateTime]).ToLongTimeString()
     } -Style 'Foreground.Blue'
     
