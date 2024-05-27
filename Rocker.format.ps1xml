@@ -694,8 +694,14 @@
                 </ItemSelectionCondition>
                 <ScriptBlock>
         (@(foreach ($portBinding in $_.HostConfig.PortBindings.psobject.properties) {
-            $linkUri = "http://$($portBinding.value.HostIP, $portBinding.value.HostPort -ne '' -join ':')/"
-            $linkText = $($portBinding.value.HostIP, $portBinding.value.HostPort -ne '' -join ':') + '-&gt;' + $portBinding.Name
+            $linkUri = "http://$(
+                $(if ($portBinding.value.HostIP) { 
+                    $portBinding.value.HostIP
+                } else {
+                    "localhost"
+                }), $portBinding.value.HostPort -ne '' -join ':'
+            )/"
+            $linkText = $linkUri + '-&gt;' + $portBinding.Name
             if ($PSStyle.FormatHyperlink) {
                 $PSStyle.FormatHyperlink($linkUri, $linkText)
             } else {
@@ -754,7 +760,7 @@
                   <ScriptBlock> $_.HostConfig.Binds</ScriptBlock>
                 </ItemSelectionCondition>
                 <ScriptBlock>
-        foreach ($hostBind in $_.HostConfig.Binds -split [Environment]::NewLine) {
+        (@(foreach ($hostBind in $_.HostConfig.Binds -split [Environment]::NewLine) {
             $splitBindings = @($hostBind -split ":")
             if ($splitBindings.Length -ge 2) {
                 $internalBinding = $splitBindings[-1]
@@ -767,7 +773,7 @@
                     }    
                 }
             }
-        }
+        }) -join [Environment]::NewLine) + [Environment]::NewLine
     </ScriptBlock>
               </ExpressionBinding>
               <ExpressionBinding>
