@@ -6,12 +6,16 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
     Write-FormatViewExpression -Newline
 
     Write-FormatViewExpression -ScriptBlock {
+        $_.Os, $_.Architecture -join '/'
+    } -Style 'Foreground.Cyan'
+
+    Write-FormatViewExpression -ScriptBlock {
         "$(if ($_.Size -gt 1GB) {
-            ($_.Size / 1GB) + "gb"
+            '' + ($_.Size / 1GB) + "gb"
         } elseif ($_.Size -gt 1MB) {
-            ($_.Size / 1MB) + "mb"
+            '' + ($_.Size / 1MB) + "mb"
         } elseif ($_.Size -gt 1KB) {
-            ($_.Size / 1KB) + "kb"
+            '' + ($_.Size / 1KB) + "kb"
         } else {
             $_.Size
         })"
@@ -26,8 +30,9 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
     Write-FormatViewExpression -Newline
 
     Write-FormatViewExpression -ScriptBlock {
-        $_.Id        
-    } -Style 'Foreground.Green'    
+        $_.Id -replace '^sha256:'
+    }
+    Write-FormatViewExpression -Newline
 }
 
 Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.container.inspect -Name json -Action {
@@ -39,13 +44,13 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
 Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.container.inspect -Name Default -Property RepoTags, Size -VirtualProperty @{
     Size = {
         if ($_.Size -gt 1GB) {
-            ($_.Size / 1GB) + "gb"
+            '' + ($_.Size / 1GB) + "gb"
         } elseif ($_.Size -gt 1MB) {
-            ($_.Size / 1MB) + "mb"
+            '' + ($_.Size / 1MB) + "mb"
         } elseif ($_.Size -gt 1KB) {
-            ($_.Size / 1KB) + "kb"
+            '' + ($_.Size / 1KB) + "kb"
         } else {
-            $_.Size
+            '' + $_.Size
         }
     }
     RepoTags =  { $_.RepoTags -join ' '}
