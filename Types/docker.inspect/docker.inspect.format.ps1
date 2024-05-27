@@ -17,9 +17,7 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
         })"
     } -Style 'Foreground.Blue'
     
-    Write-FormatViewExpression -Text {
-        " @ "
-    } -Style 'Foreground.Cyan'
+    Write-FormatViewExpression -Text " @ " -Style 'Foreground.Cyan'
 
     Write-FormatViewExpression -ScriptBlock {
         ($_.Created -as [DateTime]).ToLongDateString() + " " + ($_.Created -as [DateTime]).ToLongTimeString()
