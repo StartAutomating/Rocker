@@ -1,6 +1,10 @@
 Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.container.inspect -Name Default -Action {
     Write-FormatViewExpression -ScriptBlock {
-        $_.RepoTags        
+        if ($_.RepoTags) {
+            $_.RepoTags   
+        } elseif ($_.Image) {
+            $_.Image
+        }      
     } -Style 'Foreground.Cyan'
 
     Write-FormatViewExpression -Newline
@@ -10,12 +14,12 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
     } -Style 'Foreground.Cyan'
 
     Write-FormatViewExpression -ScriptBlock {
-        "$(if ($_.Size -gt 1GB) {
-            '' + ($_.Size / 1GB) + "gb"
+        " $(if ($_.Size -gt 1GB) {
+            '' + [Math]::Round(($_.Size / 1gb), 2) + "gb"
         } elseif ($_.Size -gt 1MB) {
-            '' + ($_.Size / 1MB) + "mb"
+            '' + [Math]::Round(($_.Size / 1mb), 2) + "mb"
         } elseif ($_.Size -gt 1KB) {
-            '' + ($_.Size / 1KB) + "kb"
+            '' + [Math]::Round(($_.Size / 1KB), 2) + "kb"
         } else {
             $_.Size
         })"
@@ -33,6 +37,13 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
         $_.Id -replace '^sha256:'
     }
     Write-FormatViewExpression -Newline
+
+    Write-FormatViewExpression -ScriptBlock {
+        if ($PSStyle) {
+            $PSStyle.OutputRendering = 'Ansi'
+        }        
+        $_.Config.Labels | Format-List | Out-String
+    }
 }
 
 Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.container.inspect -Name json -Action {
@@ -43,15 +54,15 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
 
 Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.container.inspect -Name Default -Property RepoTags, Size -VirtualProperty @{
     Size = {
-        if ($_.Size -gt 1GB) {
-            '' + ($_.Size / 1GB) + "gb"
+        "$(if ($_.Size -gt 1GB) {
+            '' + [Math]::Round(($_.Size / 1gb), 2) + "gb"
         } elseif ($_.Size -gt 1MB) {
-            '' + ($_.Size / 1MB) + "mb"
+            '' + [Math]::Round(($_.Size / 1mb), 2) + "mb"
         } elseif ($_.Size -gt 1KB) {
-            '' + ($_.Size / 1KB) + "kb"
+            '' + [Math]::Round(($_.Size / 1KB), 2) + "kb"
         } else {
-            '' + $_.Size
-        }
+            $_.Size
+        })"
     }
     RepoTags =  { $_.RepoTags -join ' '}
 }
