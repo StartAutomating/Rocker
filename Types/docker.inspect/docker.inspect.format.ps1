@@ -44,7 +44,7 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
             )/"
             $linkText = $linkUri + '->' + $portBinding.Name
             if ($PSStyle.FormatHyperlink) {
-                $PSStyle.FormatHyperlink($linkText, $linkUri)
+                $PSStyle.FormatHyperlink($linkUri, $linkUri)  + '->[' + $portBinding.Name + ']'
             } else {
                 $linkText
             }
@@ -57,8 +57,8 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
             if ($splitBindings.Length -ge 2) {
                 $internalBinding = $splitBindings[-1]
                 $externalBinding = $splitBindings[0..($splitBindings.Length - 2)] -join ':' -replace '[\\/]', ([IO.Path]::DirectorySeparatorChar)
-                if (Test-Path $externalBinding -and $psStyle.FormatHyperlink) {                
-                    $psStyle.FormatHyperlink($externalBinding, $externalBinding) + '->' + $internalBinding
+                if ((Test-Path $externalBinding) -and $psStyle.FormatHyperlink) {                
+                    $psStyle.FormatHyperlink($externalBinding, $externalBinding) + '->[' + $internalBinding + ']'
                 } else {
                     $externalBinding + '->' + $internalBinding
                 }
