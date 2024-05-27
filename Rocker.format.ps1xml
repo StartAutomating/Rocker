@@ -694,13 +694,85 @@
                 </ItemSelectionCondition>
                 <ScriptBlock>
         (@(foreach ($portBinding in $_.HostConfig.PortBindings.psobject.properties) {
-            $($portBinding.value.HostIP, $portBinding.value.HostPort -join '/') + '-&gt;' + $portBinding.Name
+            $linkUri = "http://$($portBinding.value.HostIP, $portBinding.value.HostPort -ne '' -join ':')/"
+            $linkText = $($portBinding.value.HostIP, $portBinding.value.HostPort -ne '' -join ':') + '-&gt;' + $portBinding.Name
+            if ($PSStyle.FormatHyperlink) {
+                $PSStyle.FormatHyperlink($linkUri, $linkText)
+            } else {
+                $linkText
+            }
         }) -join [Environment]::NewLine) + [Environment]::NewLine
     </ScriptBlock>
               </ExpressionBinding>
               <ExpressionBinding>
                 <ItemSelectionCondition>
                   <ScriptBlock> $_.HostConfig.PortBindings </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+                    if ($PSStyle) {
+                        $PSStyle.Reset
+                    }
+                </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.HostConfig.Binds</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>if ($psStyle) {
+   @(foreach ($styleProp in 'Foreground.Yellow') {
+
+        if ($styleProp -match '^\$') {
+            $ExecutionContext.SessionState.InvokeCommand.InvokeScript($styleProp)
+        }
+        elseif ($styleProp -match '\.') {
+            $targetObject = $psStyle
+            foreach ($dotProperty in $styleProp -split '(?&lt;!\.)\.') {
+                if (
+                    ($targetObject.psobject.Members['Item'] -and 
+                        ($targetObject.Item -is [Management.Automation.PSMethodInfo])
+                    ) -or 
+                    $targetObject -is [Collections.IDictionary]
+                ) {
+                    $targetObject = $targetObject[$dotProperty]
+                } else {
+                    $targetObject = $targetObject.$dotProperty
+                }
+            }
+            if ($targetObject) {
+                $targetObject
+            }
+        }
+        else {
+            $psStyle.$styleProp
+        }    
+
+   }) -ne '' -join ''
+}</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.HostConfig.Binds</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        foreach ($hostBind in $_.HostConfig.Binds -split [Environment]::NewLine) {
+            $splitBindings = @($hostBind -split ":")
+            if ($splitBindings.Length -ge 2) {
+                $internalBinding = $splitBindings[-1]
+                $externalBinding = $splitBindings[0..($splitBindings.Length - 2)] -join ':' -replace '[\\/]', ([IO.Path]::DirectorySeparatorChar)
+                if (Test-Path $externalBinding) {
+                    if ($psStyle.FormatHyperlink) {
+                        $psStyle.FormatHyperlink($externalBinding, $externalBinding) + '-&gt;' + $internalBinding
+                    } else {
+                        $externalBinding + '-&gt;' + $internalBinding
+                    }    
+                }
+            }
+        }
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.HostConfig.Binds</ScriptBlock>
                 </ItemSelectionCondition>
                 <ScriptBlock>
                     if ($PSStyle) {
