@@ -3,8 +3,10 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
         $_.RepoTags        
     } -Style 'Foreground.Cyan'
 
+    Write-FormatViewExpression -Newline
+
     Write-FormatViewExpression -Action {
-        " ($(if ($_.Size -gt 1GB) {
+        "$(if ($_.Size -gt 1GB) {
             ($_.Size / 1GB) + "gb"
         } elseif ($_.Size -gt 1MB) {
             ($_.Size / 1MB) + "mb"
@@ -12,24 +14,29 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
             ($_.Size / 1KB) + "kb"
         } else {
             $_.Size
-        }))"
+        })"
+    } -Style 'Foreground.Blue'
+    
+    Write-FormatViewExpression -Text {
+        " @ "
+    } -Style 'Foreground.Cyan'
+
+    Write-FormatViewExpression -Action {
+        ($_.Created -as [DateTime]).ToLongDateString() + " " + ($_.Created -as [DateTime]).ToLongTimeString()
     } -Style 'Foreground.Blue'
     
     Write-FormatViewExpression -Newline
 
     Write-FormatViewExpression -Action {
         $_.Id        
-    } -Style 'Foreground.Green'
-
-    
-
-} -GroupByProperty Os
+    } -Style 'Foreground.Green'    
+}
 
 Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.container.inspect -Name json -Action {
     Write-FormatViewExpression -Action {
         $_ | ConvertTo-Json -Depth 10
     } 
-} -GroupByProperty Os
+}
 
 Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.container.inspect -Name Default -Property RepoTags, Size -VirtualProperty @{
     Size = {
@@ -44,4 +51,4 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
         }
     }
     RepoTags =  { $_.RepoTags -join ' '}
-} -GroupByProperty Os
+}
