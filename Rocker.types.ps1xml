@@ -411,6 +411,11 @@ if ($Image) {
     </Members>
   </Type>
   <Type>
+    <Name>docker.inspect</Name>
+    <Members>
+    </Members>
+  </Type>
+  <Type>
     <Name>docker.kill</Name>
     <Members>
       <ScriptMethod>
