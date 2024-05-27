@@ -441,6 +441,50 @@
               <NewLine />
               <ExpressionBinding>
                 <ScriptBlock>if ($psStyle) {
+   @(foreach ($styleProp in 'Foreground.Cyan') {
+
+        if ($styleProp -match '^\$') {
+            $ExecutionContext.SessionState.InvokeCommand.InvokeScript($styleProp)
+        }
+        elseif ($styleProp -match '\.') {
+            $targetObject = $psStyle
+            foreach ($dotProperty in $styleProp -split '(?&lt;!\.)\.') {
+                if (
+                    ($targetObject.psobject.Members['Item'] -and 
+                        ($targetObject.Item -is [Management.Automation.PSMethodInfo])
+                    ) -or 
+                    $targetObject -is [Collections.IDictionary]
+                ) {
+                    $targetObject = $targetObject[$dotProperty]
+                } else {
+                    $targetObject = $targetObject.$dotProperty
+                }
+            }
+            if ($targetObject) {
+                $targetObject
+            }
+        }
+        else {
+            $psStyle.$styleProp
+        }    
+
+   }) -ne '' -join ''
+}</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>
+        $_.Os, $_.Architecture -join '/'
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>
+                    if ($PSStyle) {
+                        $PSStyle.Reset
+                    }
+                </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>if ($psStyle) {
    @(foreach ($styleProp in 'Foreground.Blue') {
 
         if ($styleProp -match '^\$') {
@@ -474,11 +518,11 @@
               <ExpressionBinding>
                 <ScriptBlock>
         "$(if ($_.Size -gt 1GB) {
-            ($_.Size / 1GB) + "gb"
+            '' + ($_.Size / 1GB) + "gb"
         } elseif ($_.Size -gt 1MB) {
-            ($_.Size / 1MB) + "mb"
+            '' + ($_.Size / 1MB) + "mb"
         } elseif ($_.Size -gt 1KB) {
-            ($_.Size / 1KB) + "kb"
+            '' + ($_.Size / 1KB) + "kb"
         } else {
             $_.Size
         })"
@@ -577,49 +621,11 @@
               </ExpressionBinding>
               <NewLine />
               <ExpressionBinding>
-                <ScriptBlock>if ($psStyle) {
-   @(foreach ($styleProp in 'Foreground.Green') {
-
-        if ($styleProp -match '^\$') {
-            $ExecutionContext.SessionState.InvokeCommand.InvokeScript($styleProp)
-        }
-        elseif ($styleProp -match '\.') {
-            $targetObject = $psStyle
-            foreach ($dotProperty in $styleProp -split '(?&lt;!\.)\.') {
-                if (
-                    ($targetObject.psobject.Members['Item'] -and 
-                        ($targetObject.Item -is [Management.Automation.PSMethodInfo])
-                    ) -or 
-                    $targetObject -is [Collections.IDictionary]
-                ) {
-                    $targetObject = $targetObject[$dotProperty]
-                } else {
-                    $targetObject = $targetObject.$dotProperty
-                }
-            }
-            if ($targetObject) {
-                $targetObject
-            }
-        }
-        else {
-            $psStyle.$styleProp
-        }    
-
-   }) -ne '' -join ''
-}</ScriptBlock>
-              </ExpressionBinding>
-              <ExpressionBinding>
                 <ScriptBlock>
-        $_.Id        
+        $_.Id -replace '^sha256:'
     </ScriptBlock>
               </ExpressionBinding>
-              <ExpressionBinding>
-                <ScriptBlock>
-                    if ($PSStyle) {
-                        $PSStyle.Reset
-                    }
-                </ScriptBlock>
-              </ExpressionBinding>
+              <NewLine />
             </CustomItem>
           </CustomEntry>
         </CustomEntries>
@@ -671,13 +677,13 @@
               <TableColumnItem>
                 <ScriptBlock>
         if ($_.Size -gt 1GB) {
-            ($_.Size / 1GB) + "gb"
+            '' + ($_.Size / 1GB) + "gb"
         } elseif ($_.Size -gt 1MB) {
-            ($_.Size / 1MB) + "mb"
+            '' + ($_.Size / 1MB) + "mb"
         } elseif ($_.Size -gt 1KB) {
-            ($_.Size / 1KB) + "kb"
+            '' + ($_.Size / 1KB) + "kb"
         } else {
-            $_.Size
+            '' + $_.Size
         }
     </ScriptBlock>
               </TableColumnItem>
