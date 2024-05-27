@@ -430,8 +430,8 @@
                 <ScriptBlock>
         if ($_.RepoTags) {
             $_.RepoTags   
-        } elseif ($_.Image) {
-            $_.Image
+        } elseif ($_.Config.Image) {
+            $_.Config.Image
         }      
     </ScriptBlock>
               </ExpressionBinding>
@@ -592,7 +592,12 @@
    }) -ne '' -join ''
 }</ScriptBlock>
               </ExpressionBinding>
-              <Text> @ </Text>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Size </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock> " @ " </ScriptBlock>
+              </ExpressionBinding>
               <ExpressionBinding>
                 <ItemSelectionCondition>
                   <ScriptBlock> $_.Size </ScriptBlock>
@@ -648,6 +653,61 @@
                 </ScriptBlock>
               </ExpressionBinding>
               <NewLine />
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.HostConfig.PortBindings </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>if ($psStyle) {
+   @(foreach ($styleProp in 'Foreground.Yellow') {
+
+        if ($styleProp -match '^\$') {
+            $ExecutionContext.SessionState.InvokeCommand.InvokeScript($styleProp)
+        }
+        elseif ($styleProp -match '\.') {
+            $targetObject = $psStyle
+            foreach ($dotProperty in $styleProp -split '(?&lt;!\.)\.') {
+                if (
+                    ($targetObject.psobject.Members['Item'] -and 
+                        ($targetObject.Item -is [Management.Automation.PSMethodInfo])
+                    ) -or 
+                    $targetObject -is [Collections.IDictionary]
+                ) {
+                    $targetObject = $targetObject[$dotProperty]
+                } else {
+                    $targetObject = $targetObject.$dotProperty
+                }
+            }
+            if ($targetObject) {
+                $targetObject
+            }
+        }
+        else {
+            $psStyle.$styleProp
+        }    
+
+   }) -ne '' -join ''
+}</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.HostConfig.PortBindings </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        (@(foreach ($portBinding in $_.HostConfig.PortBindings.psobject.properties) {
+            $($portBinding.value.HostIP, $portBinding.value.HostPort -join '/') + '-&gt;' + $portBinding.Name
+        }) -join [Environment]::NewLine) + [Environment]::NewLine
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.HostConfig.PortBindings </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+                    if ($PSStyle) {
+                        $PSStyle.Reset
+                    }
+                </ScriptBlock>
+              </ExpressionBinding>
               <ExpressionBinding>
                 <ScriptBlock>
         $_.Id -replace '^sha256:'
