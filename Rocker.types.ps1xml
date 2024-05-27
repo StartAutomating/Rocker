@@ -413,6 +413,28 @@ if ($Image) {
   <Type>
     <Name>docker.inspect</Name>
     <Members>
+      <ScriptMethod>
+        <Name>ContainerID.Input</Name>
+        <Script>
+                        &lt;#
+.SYNOPSIS
+    ContainerID Input
+.DESCRIPTION
+    Allows the ContainerID to be passed in as a parameter (from pipelined objects)
+#&gt;
+param(
+# The Container ID.
+[string]
+$ContainerID
+)
+
+if ($ContainerID) {
+    $ContainerID
+}
+
+
+                    </Script>
+      </ScriptMethod>
     </Members>
   </Type>
   <Type>
