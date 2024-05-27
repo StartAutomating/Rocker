@@ -35,9 +35,32 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
 
     Write-FormatViewExpression -If { $_.HostConfig.PortBindings } -ScriptBlock {
         (@(foreach ($portBinding in $_.HostConfig.PortBindings.psobject.properties) {
-            $($portBinding.value.HostIP, $portBinding.value.HostPort -join '/') + '->' + $portBinding.Name
+            $linkUri = "http://$($portBinding.value.HostIP, $portBinding.value.HostPort -ne '' -join ':')/"
+            $linkText = $($portBinding.value.HostIP, $portBinding.value.HostPort -ne '' -join ':') + '->' + $portBinding.Name
+            if ($PSStyle.FormatHyperlink) {
+                $PSStyle.FormatHyperlink($linkUri, $linkText)
+            } else {
+                $linkText
+            }
         }) -join [Environment]::NewLine) + [Environment]::NewLine
     } -Style 'Foreground.Yellow'
+
+    Write-FormatViewExpression -If { $_.HostConfig.Binds} -ScriptBlock {
+        foreach ($hostBind in $_.HostConfig.Binds -split [Environment]::NewLine) {
+            $splitBindings = @($hostBind -split ":")
+            if ($splitBindings.Length -ge 2) {
+                $internalBinding = $splitBindings[-1]
+                $externalBinding = $splitBindings[0..($splitBindings.Length - 2)] -join ':' -replace '[\\/]', ([IO.Path]::DirectorySeparatorChar)
+                if (Test-Path $externalBinding) {
+                    if ($psStyle.FormatHyperlink) {
+                        $psStyle.FormatHyperlink($externalBinding, $externalBinding) + '->' + $internalBinding
+                    } else {
+                        $externalBinding + '->' + $internalBinding
+                    }    
+                }
+            }
+        }
+    } -Style 'Foreground.Yellow' 
 
     Write-FormatViewExpression -ScriptBlock {
         $_.Id -replace '^sha256:'
