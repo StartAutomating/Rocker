@@ -31,7 +31,7 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
 }
 
 Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.container.inspect -Name json -Action {
-    Write-FormatViewExpression -Action {
+    Write-FormatViewExpression -ScriptBlock {
         $_ | ConvertTo-Json -Depth 10
     } 
 }
