@@ -25,7 +25,7 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
     
     Write-FormatViewExpression -Newline
 
-    Write-FormatViewExpression -Action {
+    Write-FormatViewExpression -ScriptBlock {
         $_.Id        
     } -Style 'Foreground.Green'    
 }
