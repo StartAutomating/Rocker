@@ -2,13 +2,12 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
     Write-FormatViewExpression -ScriptBlock {
         if ($_.RepoTags) {
             $_.RepoTags   
-        } elseif ($_.Image) {
-            $_.Image
+        } elseif ($_.Config.Image) {
+            $_.Config.Image
         }      
     } -Style 'Foreground.Cyan'
 
     Write-FormatViewExpression -Newline
-
     
     Write-FormatViewExpression -ScriptBlock {
         $_.Os, $_.Architecture -join '/'
@@ -26,13 +25,19 @@ Write-FormatView -TypeName docker.inspect, docker.image.inspect, docker.containe
         })"
     } -Style 'Foreground.Blue' -If { $_.Size }
     
-    Write-FormatViewExpression -Text " @ " -Style 'Foreground.Cyan' -If { $_.Size }
+    Write-FormatViewExpression -ScriptBlock { " @ " } -Style 'Foreground.Cyan' -If { $_.Size }
 
     Write-FormatViewExpression -ScriptBlock {
         ($_.Created -as [DateTime]).ToLongDateString() + " " + ($_.Created -as [DateTime]).ToLongTimeString()
     } -Style 'Foreground.Blue'
     
     Write-FormatViewExpression -Newline
+
+    Write-FormatViewExpression -If { $_.HostConfig.PortBindings } -ScriptBlock {
+        (@(foreach ($portBinding in $_.HostConfig.PortBindings.psobject.properties) {
+            $($portBinding.value.HostIP, $portBinding.value.HostPort -join '/') + '->' + $portBinding.Name
+        }) -join [Environment]::NewLine) + [Environment]::NewLine
+    } -Style 'Foreground.Yellow'
 
     Write-FormatViewExpression -ScriptBlock {
         $_.Id -replace '^sha256:'
