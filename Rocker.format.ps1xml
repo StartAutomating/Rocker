@@ -444,6 +444,9 @@
               </ExpressionBinding>
               <NewLine />
               <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Os -and $_.Architecture</ScriptBlock>
+                </ItemSelectionCondition>
                 <ScriptBlock>if ($psStyle) {
    @(foreach ($styleProp in 'Foreground.Cyan') {
 
@@ -476,11 +479,17 @@
 }</ScriptBlock>
               </ExpressionBinding>
               <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Os -and $_.Architecture</ScriptBlock>
+                </ItemSelectionCondition>
                 <ScriptBlock>
         $_.Os, $_.Architecture -join '/'
     </ScriptBlock>
               </ExpressionBinding>
               <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Os -and $_.Architecture</ScriptBlock>
+                </ItemSelectionCondition>
                 <ScriptBlock>
                     if ($PSStyle) {
                         $PSStyle.Reset
@@ -488,6 +497,9 @@
                 </ScriptBlock>
               </ExpressionBinding>
               <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Size </ScriptBlock>
+                </ItemSelectionCondition>
                 <ScriptBlock>if ($psStyle) {
    @(foreach ($styleProp in 'Foreground.Blue') {
 
@@ -520,6 +532,9 @@
 }</ScriptBlock>
               </ExpressionBinding>
               <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Size </ScriptBlock>
+                </ItemSelectionCondition>
                 <ScriptBlock>
         " $(if ($_.Size -gt 1GB) {
             '' + [Math]::Round(($_.Size / 1gb), 2) + "gb"
@@ -533,6 +548,9 @@
     </ScriptBlock>
               </ExpressionBinding>
               <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Size </ScriptBlock>
+                </ItemSelectionCondition>
                 <ScriptBlock>
                     if ($PSStyle) {
                         $PSStyle.Reset
@@ -540,6 +558,9 @@
                 </ScriptBlock>
               </ExpressionBinding>
               <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Size </ScriptBlock>
+                </ItemSelectionCondition>
                 <ScriptBlock>if ($psStyle) {
    @(foreach ($styleProp in 'Foreground.Cyan') {
 
@@ -573,6 +594,9 @@
               </ExpressionBinding>
               <Text> @ </Text>
               <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Size </ScriptBlock>
+                </ItemSelectionCondition>
                 <ScriptBlock>
                     if ($PSStyle) {
                         $PSStyle.Reset
@@ -629,15 +653,6 @@
         $_.Id -replace '^sha256:'
     </ScriptBlock>
               </ExpressionBinding>
-              <NewLine />
-              <ExpressionBinding>
-                <ScriptBlock>
-        if ($PSStyle) {
-            $PSStyle.OutputRendering = 'Ansi'
-        }        
-        $_.Config.Labels | Format-List | Out-String
-    </ScriptBlock>
-              </ExpressionBinding>
             </CustomItem>
           </CustomEntry>
         </CustomEntries>
@@ -657,6 +672,30 @@
               <ExpressionBinding>
                 <ScriptBlock>
         $_ | ConvertTo-Json -Depth 10
+    </ScriptBlock>
+              </ExpressionBinding>
+            </CustomItem>
+          </CustomEntry>
+        </CustomEntries>
+      </CustomControl>
+    </View>
+    <View>
+      <Name>labels</Name>
+      <ViewSelectedBy>
+        <TypeName>docker.inspect</TypeName>
+        <TypeName>docker.image.inspect</TypeName>
+        <TypeName>docker.container.inspect</TypeName>
+      </ViewSelectedBy>
+      <CustomControl>
+        <CustomEntries>
+          <CustomEntry>
+            <CustomItem>
+              <ExpressionBinding>
+                <ScriptBlock>
+        if ($PSStyle) {
+            $PSStyle.OutputRendering = 'Ansi'
+        }        
+        $_.Config.labels | Format-List | Out-String
     </ScriptBlock>
               </ExpressionBinding>
             </CustomItem>
