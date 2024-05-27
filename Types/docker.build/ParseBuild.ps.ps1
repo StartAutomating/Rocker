@@ -22,6 +22,7 @@ begin {
     $LayerStartTimes = [Ordered]@{}
     $LayerMessages = [Ordered]@{}
     $BuildStartTime = [DateTime]::Now
+    $imageHash = ''
 }
 
 process {
@@ -46,7 +47,7 @@ process {
             Write-Progress -Activity "$LayerNumber @ $timeSince" -Status "$lineOut" -id $layerProgressId -Completed
         } else {
             # Layer is not done or cached, write progress.
-            Write-Progress -Activity "$LayerNumber @ $timeSince" -Status "$lineOut" -id $layerProgressId
+            Write-Progress -Activity "$LayerNumber @ $timeSince" -Status "$lineOut" -id $layerProgressId -PercentComplete ((($timeSince.TotalSeconds % 60) -as [double])/60.0 * 100) 
         }
     } else {
         $layerProgressId = $ProgressId
@@ -61,10 +62,20 @@ process {
             ' '
         )"  -id $layerProgressId -PercentComplete $PercentComplete
     }
-   
-    "$lineOut"
+
+    if ($lineout -match "writing image sha256:(?<ImageHash>[0-9a-f]{40,64}) done") {
+        $imageHash = $matches.ImageHash
+    }
+
+    if ($VerbosePreference -ne 'SilentlyContinue') {
+        "$lineOut"
+        
+    }
 }
 
 end {
-    
+    if ($imageHash) {
+        docker image inspect $imageHash
+    }
+    # $lineOut
 }
