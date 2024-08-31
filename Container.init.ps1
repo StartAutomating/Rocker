@@ -22,8 +22,8 @@
     That is why this file is using the namespace 'mcr.microsoft.com/powershell'.
     (this does nothing, but most likely will be used in the future)
 #>
-using namespace 'mcr.microsoft.com/powershell AS PowerShell'
-using namespace 'docker:dind AS Docker'
+using namespace 'mcr.microsoft.com/powershell AS powerShell'
+using namespace 'docker:dind AS docker'
 
 param(
 # The name of the module to be installed.
@@ -61,7 +61,7 @@ Get-ChildItem -Path $PSScriptRoot |
 # If we have packages to install
 if ($InstallPackages) {
     # install the packages
-    apt-get update && apt-get install -y "$($InstallPackages -join ' ')" && apt-get clean | Out-Host
+    apt-get update && apt-get install -y @InstallPackages && apt-get clean | Out-Host
 }
 
 # Create a new profile
