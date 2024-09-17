@@ -286,7 +286,7 @@ function Get-Rocker {
         
         # Collect all of the arguments
         $myArgs = @(
-            $MyOriginalArguments,$InputArguments | # (the original arguments, and any input arguments we found)
+            $myArgs | # (the original arguments, and any input arguments we found)
                 . { process { $_ } } |
                 . { 
                 process {
