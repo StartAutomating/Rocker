@@ -262,13 +262,13 @@ $ScriptBlock
 
 if ($ScriptBlock) {
     "pwsh"
-    "-encodedcommand"
     if ($ScriptBlock.NoExit) {
         "-noexit"
     }
     if (-not $ScriptBlock.UseProfile) {
         "-noprofile"
     }
+    "-encodedcommand"    
     [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes("$ScriptBlock"))
 }
 
