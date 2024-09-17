@@ -248,6 +248,41 @@ function Get-Rocker {
                 & $inputMethodSplat.psobject.properties['Command'].Value @inputMethodSplat
             }
         })
+
+        # If we had input arguments, we can add them to the list of arguments
+        $myArgs = @(if ($InputArguments) {
+            # but we have to be a bit careful, because the command have can options 
+            # (and additional commands can also have options)
+            # So we'll put any input arguments before the first non-option argument.
+            $optionsEncountered = $true
+            $inputAdded = $false
+            for ($originalArgumentIndex =0 ; $originalArgumentIndex -lt $myOriginalArguments.Length;$originalArgumentIndex++) {            
+                $originalArgument = $MyOriginalArguments[$originalArgumentIndex]
+                if (-not $originalArgument) { break }
+                if ($originalArgumentIndex -eq 0) {
+                    $originalArgument
+                } else {
+                    if ($originalArgument -match '^-') {
+                        $originalArgument
+                        $optionsEncountered = $true
+                    }
+                    else {
+                        if ($optionsEncountered -and -not $inputAdded) {
+                            $InputArguments
+                            $inputAdded = $true
+                        }
+                        $originalArgument
+                    }
+                }
+            }
+            # If we didn't find a place to add the input arguments, we'll add them at the end.
+            if (-not $inputAdded) {
+                $InputArguments
+            }
+        } else {
+            $MyOriginalArguments
+        })
+        
         
         # Collect all of the arguments
         $myArgs = @(
