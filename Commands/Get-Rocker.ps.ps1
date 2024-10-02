@@ -252,7 +252,7 @@ function Get-Rocker
             # but we have to be a bit careful, because the command have can options 
             # (and additional commands can also have options)
             # So we'll put any input arguments before the first non-option argument.
-            $optionsEncountered = $true
+            $optionsEncountered = $false
             $inputAdded = $false
             for ($originalArgumentIndex =0 ; $originalArgumentIndex -lt $myOriginalArguments.Length;$originalArgumentIndex++) {            
                 $originalArgument = $MyOriginalArguments[$originalArgumentIndex]
